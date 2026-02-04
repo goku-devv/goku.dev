@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Goku | Profile</title>
+        <link rel="stylesheet" href="/static/style.css">
+        <link
+            href="https://fonts.googleapis.com/css?family=Inter:400,600,700&display=swap"
+            rel="stylesheet">
+    </head>
+    <body>
+        <div class="bg-pattern"></div>
+        <main class="profile-main">
+            <section class="profile-card">
+                <div class="profile-img-wrapper">
+                    <img src="/static/goku.jpg" alt="Description">
+                </div>
+                <div class="profile-content">
+                    {{.Content}}
+                </div>
+            </section>
+        </main>
+        <script>
+        // Enhance social links with SVG icons
+        document.addEventListener('DOMContentLoaded', function() {
+            const icons = {
+                'x.com': `<svg viewBox="0 0 24 24" fill="none" width="18" height="18" xmlns="http://www.w3.org/2000/svg"><path d="M17.53 3.5h3.7l-7.98 9.1 9.4 11.9h-7.4l-5.8-7.2-6.6 7.2H1.1l8.5-9.3L.4 3.5h7.5l5.1 6.5 6.53-6.5Zm-1.3 17.1h2l-8.6-11.1h-2.1l8.7 11.1Z" fill="currentColor"/></svg>`,
+                'twitter.com': `<svg viewBox="0 0 24 24" fill="none" width="18" height="18" xmlns="http://www.w3.org/2000/svg"><path d="M22.46 5.924c-.793.352-1.645.59-2.54.698a4.48 4.48 0 0 0 1.963-2.475 8.94 8.94 0 0 1-2.828 1.082A4.48 4.48 0 0 0 11.1 9.03c0 .352.04.695.116 1.022C7.728 9.89 4.1 8.1 1.67 5.149a4.48 4.48 0 0 0-.606 2.254c0 1.555.792 2.93 2.002 3.736a4.48 4.48 0 0 1-2.03-.56v.057c0 2.172 1.545 3.984 3.6 4.393a4.48 4.48 0 0 1-2.025.077c.572 1.785 2.23 3.084 4.2 3.12A8.98 8.98 0 0 1 2 19.54a12.7 12.7 0 0 0 6.88 2.017c8.26 0 12.78-6.84 12.78-12.77 0-.195-.004-.39-.013-.583A9.1 9.1 0 0 0 24 4.59a8.93 8.93 0 0 1-2.54.698Z" fill="currentColor"/></svg>`,
+                'linkedin.com': `<svg viewBox="0 0 24 24" fill="none" width="18" height="18" xmlns="http://www.w3.org/2000/svg"><path d="M19 0h-14c-2.76 0-5 2.24-5 5v14c0 2.76 2.24 5 5 5h14c2.76 0 5-2.24 5-5v-14c0-2.76-2.24-5-5-5zm-11 19h-3v-9h3v9zm-1.5-10.28c-.97 0-1.75-.79-1.75-1.75s.78-1.75 1.75-1.75 1.75.79 1.75 1.75-.78 1.75-1.75 1.75zm15.5 10.28h-3v-4.5c0-1.08-.02-2.47-1.5-2.47-1.5 0-1.73 1.17-1.73 2.39v4.58h-3v-9h2.89v1.23h.04c.4-.75 1.38-1.54 2.84-1.54 3.04 0 3.6 2 3.6 4.59v4.72z" fill="currentColor"/></svg>`,
+                'github.com': `<svg viewBox="0 0 24 24" fill="none" width="18" height="18" xmlns="http://www.w3.org/2000/svg"><path d="M12 2C6.48 2 2 6.58 2 12.26c0 4.48 2.87 8.28 6.84 9.63.5.09.68-.22.68-.48 0-.24-.01-.87-.01-1.7-2.78.62-3.37-1.36-3.37-1.36-.45-1.18-1.1-1.5-1.1-1.5-.9-.63.07-.62.07-.62 1 .07 1.53 1.05 1.53 1.05.89 1.56 2.34 1.11 2.91.85.09-.66.35-1.11.63-1.37-2.22-.26-4.56-1.14-4.56-5.07 0-1.12.38-2.03 1-2.75-.1-.26-.44-1.3.1-2.7 0 0 .83-.27 2.75 1.02a9.18 9.18 0 0 1 2.5-.34c.85 0 1.7.11 2.5.34 1.92-1.29 2.75-1.02 2.75-1.02.54 1.4.2 2.44.1 2.7.62.72 1 1.63 1 2.75 0 3.94-2.34 4.81-4.57 5.07.36.32.68.94.68 1.9 0 1.37-.01 2.47-.01 2.81 0 .27.18.58.69.48A10.01 10.01 0 0 0 22 12.26C22 6.58 17.52 2 12 2Z" fill="currentColor"/></svg>`
+            };
+            document.querySelectorAll('.profile-content a').forEach(function(link) {
+                const url = link.href;
+                if (url.includes('x.com')) {
+                    link.innerHTML = icons['x.com'] + 'X';
+                } else if (url.includes('linkedin.com')) {
+                    link.innerHTML = icons['linkedin.com'] + 'LinkedIn';
+                } else if (url.includes('github.com')) {
+                    link.innerHTML = icons['github.com'] + 'GitHub';
+                }
+            });
+        });
+        </script>
+    </body>
+</html>
