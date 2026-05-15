@@ -10,7 +10,6 @@ entries:
       - Maintain and optimize a high-traffic monolithic eCommerce system (autonomous.ai) handling 1M+ orders, 1M+ shipments, and 150K daily sessions.
       - Led migration from monolithic to microservices architecture, improving scalability and fault tolerance.
       - Implemented OpenTelemetry for distributed tracing and Datadog for real-time monitoring.
-      - Developed an AI-powered chatbot using Llama, FLUX, and Hermès, supporting expansion into AI-driven services.
       - Integrated multi-chain cryptocurrency payments (BTC, ETH, SOL, BNB).
       - Stack — Golang, MySQL, MongoDB, Redis, Google Pub/Sub, gRPC, Elasticsearch.
   - company: Bestarion Software Company Ltd.

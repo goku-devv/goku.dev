@@ -49,7 +49,7 @@ layout: hero
 name: goku
 role: Software Engineer
 location: Ho Chi Minh, Viet Nam
-image: /static/goku.png
+image: /static/photos/goku.png
 tagline: Backend dev.
 ctas:
   - label: Email
@@ -73,7 +73,7 @@ ignored body
 	if h.Name != "goku" || h.Role != "Software Engineer" || h.Location != "Ho Chi Minh, Viet Nam" {
 		t.Errorf("hero fields: %+v", h)
 	}
-	if h.Image != "/static/goku.png" || h.Tagline != "Backend dev." {
+	if h.Image != "/static/photos/goku.png" || h.Tagline != "Backend dev." {
 		t.Errorf("hero image/tagline: %+v", h)
 	}
 	if len(h.CTAs) != 2 || h.CTAs[0].Label != "Email" || h.CTAs[1].URL != "https://github.com/x" {

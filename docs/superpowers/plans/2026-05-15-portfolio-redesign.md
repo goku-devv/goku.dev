@@ -15,12 +15,14 @@
 ### Task 1: Add yaml.v3 dependency and define Section types
 
 **Files:**
+
 - Modify: `go.mod`, `go.sum`
 - Create: `content.go`
 
 - [ ] **Step 1: Add yaml.v3 to go.mod**
 
 Run:
+
 ```bash
 go get gopkg.in/yaml.v3
 ```
@@ -84,6 +86,7 @@ func LoadSections(dir string) ([]Section, error) {
 - [ ] **Step 3: Verify it compiles**
 
 Run:
+
 ```bash
 go build ./...
 ```
@@ -102,6 +105,7 @@ git commit -m "add yaml.v3 dep and Section types"
 ### Task 2: Write failing tests for `LoadSections`
 
 **Files:**
+
 - Create: `content_test.go`
 
 - [ ] **Step 1: Write the test file**
@@ -160,7 +164,7 @@ layout: hero
 name: goku
 role: Software Engineer
 location: Ho Chi Minh, Viet Nam
-image: /static/goku.png
+image: /static/photos/goku.png
 tagline: Backend dev.
 ctas:
   - label: Email
@@ -184,7 +188,7 @@ ignored body
 	if h.Name != "goku" || h.Role != "Software Engineer" || h.Location != "Ho Chi Minh, Viet Nam" {
 		t.Errorf("hero fields: %+v", h)
 	}
-	if h.Image != "/static/goku.png" || h.Tagline != "Backend dev." {
+	if h.Image != "/static/photos/goku.png" || h.Tagline != "Backend dev." {
 		t.Errorf("hero image/tagline: %+v", h)
 	}
 	if len(h.CTAs) != 2 || h.CTAs[0].Label != "Email" || h.CTAs[1].URL != "https://github.com/x" {
@@ -313,6 +317,7 @@ func TestLoadSections_SkipsBadYAML(t *testing.T) {
 - [ ] **Step 2: Run tests to verify they fail**
 
 Run:
+
 ```bash
 go test ./...
 ```
@@ -331,6 +336,7 @@ git commit -m "add failing tests for LoadSections"
 ### Task 3: Implement `LoadSections`
 
 **Files:**
+
 - Modify: `content.go`
 
 - [ ] **Step 1: Replace the stub with the real implementation**
@@ -532,6 +538,7 @@ func splitFrontmatter(raw []byte) ([]byte, []byte) {
 - [ ] **Step 2: Run tests to verify they pass**
 
 Run:
+
 ```bash
 go test ./...
 ```
@@ -550,6 +557,7 @@ git commit -m "implement LoadSections frontmatter parser"
 ### Task 4: Wire `LoadSections` into the HTTP handler
 
 **Files:**
+
 - Modify: `main.go`
 
 - [ ] **Step 1: Replace `homeHandler` and `PageData`**
@@ -626,6 +634,7 @@ func main() {
 - [ ] **Step 2: Verify it builds**
 
 Run:
+
 ```bash
 go build ./...
 ```
@@ -644,6 +653,7 @@ git commit -m "load sections in homeHandler and parse all templates"
 ### Task 5: Update `layout.html` to dispatch sections + add `section_plain` partial
 
 **Files:**
+
 - Modify: `templates/layout.html`
 - Create: `templates/section_plain.html`
 
@@ -651,9 +661,7 @@ git commit -m "load sections in homeHandler and parse all templates"
 
 ```html
 {{ define "section_plain" }}
-<section class="section section-plain section-{{ .Slug }}">
-    {{ .HTML }}
-</section>
+<section class="section section-plain section-{{ .Slug }}">{{ .HTML }}</section>
 {{ end }}
 ```
 
@@ -662,30 +670,25 @@ git commit -m "load sections in homeHandler and parse all templates"
 Find the existing block:
 
 ```html
-        <main class="profile-main">
-            <section class="profile-card">
-                <div class="profile-img-wrapper">
-                    <img src="/static/goku.png" alt="Description">
-                </div>
-                <div class="profile-content">
-                    {{.Content}}
-                </div>
-            </section>
-        </main>
+<main class="profile-main">
+  <section class="profile-card">
+    <div class="profile-img-wrapper">
+      <img src="/static/photos/goku.png" alt="Description" />
+    </div>
+    <div class="profile-content">{{.Content}}</div>
+  </section>
+</main>
 ```
 
 Replace with:
 
 ```html
-        <main class="profile-main">
-            {{ range .Sections }}
-                {{ if eq .Layout "hero" }}{{ template "section_hero" . }}
-                {{ else if eq .Layout "timeline" }}{{ template "section_timeline" . }}
-                {{ else if eq .Layout "grouped" }}{{ template "section_grouped" . }}
-                {{ else }}{{ template "section_plain" . }}
-                {{ end }}
-            {{ end }}
-        </main>
+<main class="profile-main">
+  {{ range .Sections }} {{ if eq .Layout "hero" }}{{ template "section_hero" .
+  }} {{ else if eq .Layout "timeline" }}{{ template "section_timeline" . }} {{
+  else if eq .Layout "grouped" }}{{ template "section_grouped" . }} {{ else }}{{
+  template "section_plain" . }} {{ end }} {{ end }}
+</main>
 ```
 
 - [ ] **Step 3: Update the social-icon script scope**
@@ -707,16 +710,19 @@ Replace with:
 `html/template`'s `ParseGlob` will fail at runtime if `layout.html` references a template that doesn't exist. Create temporary empty stubs so the page renders during incremental work:
 
 Create `templates/section_hero.html`:
+
 ```html
 {{ define "section_hero" }}{{ end }}
 ```
 
 Create `templates/section_timeline.html`:
+
 ```html
 {{ define "section_timeline" }}{{ end }}
 ```
 
 Create `templates/section_grouped.html`:
+
 ```html
 {{ define "section_grouped" }}{{ end }}
 ```
@@ -764,29 +770,31 @@ git commit -m "dispatch sections from layout.html, add plain partial"
 ### Task 6: Implement `section_hero` partial + hero CSS
 
 **Files:**
+
 - Modify: `templates/section_hero.html`
 - Modify: `static/style.css`
 
 - [ ] **Step 1: Replace `templates/section_hero.html`**
 
 ```html
-{{ define "section_hero" }}
-{{ with .Hero }}
+{{ define "section_hero" }} {{ with .Hero }}
 <section class="section section-hero">
-    <div class="hero-img-wrapper">
-        <img src="{{ .Image }}" alt="{{ .Name }}">
-    </div>
-    <h1 class="hero-name">{{ .Name }}</h1>
-    <p class="hero-meta">{{ .Role }} · {{ .Location }}</p>
-    {{ if .Tagline }}<p class="hero-tagline">{{ .Tagline }}</p>{{ end }}
-    {{ if .CTAs }}
-    <p class="hero-ctas">
-        {{ range $i, $c := .CTAs }}{{ if $i }} {{ end }}<a href="{{ $c.URL }}">{{ $c.Label }}</a>{{ end }}
-    </p>
-    {{ end }}
+  <div class="hero-img-wrapper">
+    <img src="{{ .Image }}" alt="{{ .Name }}" />
+  </div>
+  <h1 class="hero-name">{{ .Name }}</h1>
+  <p class="hero-meta">{{ .Role }} · {{ .Location }}</p>
+  {{ if .Tagline }}
+  <p class="hero-tagline">{{ .Tagline }}</p>
+  {{ end }} {{ if .CTAs }}
+  <p class="hero-ctas">
+    {{ range $i, $c := .CTAs }}{{ if $i }} {{ end }}<a href="{{ $c.URL }}"
+      >{{ $c.Label }}</a
+    >{{ end }}
+  </p>
+  {{ end }}
 </section>
-{{ end }}
-{{ end }}
+{{ end }} {{ end }}
 ```
 
 - [ ] **Step 2: Append hero styles to `static/style.css`**
@@ -796,84 +804,96 @@ Add at the end of the file:
 ```css
 /* === Section shell === */
 .section {
-    background: var(--card-bg);
-    border: 1px solid var(--border);
-    padding: 48px 40px;
-    width: 100%;
-    box-sizing: border-box;
-    transition: background 0.2s ease, border-color 0.2s ease;
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  padding: 48px 40px;
+  width: 100%;
+  box-sizing: border-box;
+  transition:
+    background 0.2s ease,
+    border-color 0.2s ease;
 }
 .profile-main {
-    flex-direction: column;
-    gap: 24px;
-    max-width: 560px;
-    margin: 0 auto;
+  flex-direction: column;
+  gap: 24px;
+  max-width: 560px;
+  margin: 0 auto;
 }
 
 /* === Hero === */
 .section-hero {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    text-align: center;
-    padding: 60px 40px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 60px 40px;
 }
 .hero-img-wrapper {
-    width: 100px;
-    height: 100px;
-    margin-bottom: 28px;
-    border: 1px solid var(--border);
-    overflow: hidden;
+  width: 100px;
+  height: 100px;
+  margin-bottom: 28px;
+  border: 1px solid var(--border);
+  overflow: hidden;
 }
 .hero-img-wrapper img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
 }
 .hero-name {
-    font-size: 1.8rem;
-    font-weight: 600;
-    letter-spacing: -0.02em;
-    margin: 0 0 0.5em;
-    color: var(--text-primary);
+  font-size: 1.8rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  margin: 0 0 0.5em;
+  color: var(--text-primary);
 }
 .hero-meta {
-    font-size: 0.95rem;
-    color: var(--text-secondary);
-    margin: 0 0 1em;
+  font-size: 0.95rem;
+  color: var(--text-secondary);
+  margin: 0 0 1em;
 }
 .hero-tagline {
-    font-size: 0.95rem;
-    line-height: 1.6;
-    color: var(--text-primary);
-    margin: 0 0 1.5em;
+  font-size: 0.95rem;
+  line-height: 1.6;
+  color: var(--text-primary);
+  margin: 0 0 1.5em;
 }
 .hero-ctas {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 16px;
-    margin: 0;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 16px;
+  margin: 0;
 }
 .hero-ctas a {
-    color: var(--text-primary);
-    text-decoration: none;
-    border-bottom: 1px solid var(--link-border);
-    transition: opacity 0.2s;
-    font-size: 0.95rem;
+  color: var(--text-primary);
+  text-decoration: none;
+  border-bottom: 1px solid var(--link-border);
+  transition: opacity 0.2s;
+  font-size: 0.95rem;
 }
-.hero-ctas a:hover { opacity: 0.6; }
+.hero-ctas a:hover {
+  opacity: 0.6;
+}
 
 @media (max-width: 600px) {
-    .section {
-        padding: 36px 24px;
-        border-left: none;
-        border-right: none;
-    }
-    .section-hero { padding: 40px 24px; }
-    .hero-img-wrapper { width: 80px; height: 80px; margin-bottom: 24px; }
-    .hero-name { font-size: 1.5rem; }
+  .section {
+    padding: 36px 24px;
+    border-left: none;
+    border-right: none;
+  }
+  .section-hero {
+    padding: 40px 24px;
+  }
+  .hero-img-wrapper {
+    width: 80px;
+    height: 80px;
+    margin-bottom: 24px;
+  }
+  .hero-name {
+    font-size: 1.5rem;
+  }
 }
 ```
 
@@ -891,7 +911,7 @@ layout: hero
 name: goku
 role: Software Engineer
 location: Ho Chi Minh, Viet Nam
-image: /static/goku.png
+image: /static/photos/goku.png
 tagline: Backend developer with 7 years building high-traffic distributed systems.
 ctas:
   - label: hi.im@goku.dev
@@ -905,6 +925,7 @@ EOF
 ```
 
 Start the server and open http://localhost:8080 in a browser. Confirm:
+
 - Photo, name, "Software Engineer · Ho Chi Minh, Viet Nam", tagline, and three underlined CTA links visible (the GitHub and X labels swap to icon + text via the existing inline script)
 - Light/dark toggle still works
 
@@ -922,6 +943,7 @@ git commit -m "implement hero section and styles"
 ### Task 7: Implement `section_timeline` partial + timeline CSS
 
 **Files:**
+
 - Modify: `templates/section_timeline.html`
 - Modify: `static/style.css`
 
@@ -930,25 +952,29 @@ git commit -m "implement hero section and styles"
 ```html
 {{ define "section_timeline" }}
 <section class="section section-timeline section-{{ .Slug }}">
-    <h2 class="section-title">{{ .Title }}</h2>
-    <div class="timeline">
-        {{ range .Entries }}
-        <div class="timeline-row">
-            <div class="timeline-dates">{{ .Dates }}</div>
-            <div class="timeline-entry">
-                <div class="timeline-company">
-                    {{ if .URL }}<a href="{{ .URL }}">{{ .Company }}</a>{{ else }}{{ .Company }}{{ end }}
-                </div>
-                {{ if .Role }}<div class="timeline-role">{{ .Role }}</div>{{ end }}
-                {{ if .Bullets }}
-                <ul class="timeline-bullets">
-                    {{ range .Bullets }}<li>{{ . }}</li>{{ end }}
-                </ul>
-                {{ end }}
-            </div>
+  <h2 class="section-title">{{ .Title }}</h2>
+  <div class="timeline">
+    {{ range .Entries }}
+    <div class="timeline-row">
+      <div class="timeline-dates">{{ .Dates }}</div>
+      <div class="timeline-entry">
+        <div class="timeline-company">
+          {{ if .URL }}<a href="{{ .URL }}">{{ .Company }}</a>{{ else }}{{
+          .Company }}{{ end }}
         </div>
+        {{ if .Role }}
+        <div class="timeline-role">{{ .Role }}</div>
+        {{ end }} {{ if .Bullets }}
+        <ul class="timeline-bullets">
+          {{ range .Bullets }}
+          <li>{{ . }}</li>
+          {{ end }}
+        </ul>
         {{ end }}
+      </div>
     </div>
+    {{ end }}
+  </div>
 </section>
 {{ end }}
 ```
@@ -958,77 +984,90 @@ git commit -m "implement hero section and styles"
 ```css
 /* === Section title (shared by timeline + grouped) === */
 .section-title {
-    font-size: 0.85rem;
-    color: var(--text-primary);
-    margin: 0 0 24px;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
+  font-size: 0.85rem;
+  color: var(--text-primary);
+  margin: 0 0 24px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
 }
 
 /* === Timeline === */
 .timeline {
-    display: grid;
-    grid-template-columns: 110px 1fr;
-    column-gap: 20px;
-    row-gap: 28px;
+  display: grid;
+  grid-template-columns: 110px 1fr;
+  column-gap: 20px;
+  row-gap: 28px;
 }
 .timeline-row {
-    display: contents;
+  display: contents;
 }
 .timeline-dates {
-    font-size: 0.85rem;
-    color: var(--text-secondary);
-    padding-top: 2px;
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  padding-top: 2px;
 }
 .timeline-entry {
-    position: relative;
-    padding-left: 20px;
-    border-left: 1px solid var(--border);
+  position: relative;
+  padding-left: 20px;
+  border-left: 1px solid var(--border);
 }
 .timeline-entry::before {
-    content: "";
-    position: absolute;
-    left: -4px;
-    top: 8px;
-    width: 7px;
-    height: 7px;
-    border-radius: 50%;
-    background: var(--text-primary);
+  content: "";
+  position: absolute;
+  left: -4px;
+  top: 8px;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--text-primary);
 }
 .timeline-company {
-    font-size: 0.95rem;
-    font-weight: 600;
-    color: var(--text-primary);
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--text-primary);
 }
 .timeline-company a {
-    color: var(--text-primary);
-    text-decoration: none;
-    border-bottom: 1px solid var(--link-border);
+  color: var(--text-primary);
+  text-decoration: none;
+  border-bottom: 1px solid var(--link-border);
 }
-.timeline-company a:hover { opacity: 0.6; }
+.timeline-company a:hover {
+  opacity: 0.6;
+}
 .timeline-role {
-    font-size: 0.9rem;
-    color: var(--text-secondary);
-    font-style: italic;
-    margin-top: 2px;
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  font-style: italic;
+  margin-top: 2px;
 }
 .timeline-bullets {
-    margin: 10px 0 0;
-    padding-left: 18px;
+  margin: 10px 0 0;
+  padding-left: 18px;
 }
 .timeline-bullets li {
-    color: var(--text-secondary);
-    font-size: 0.95rem;
-    line-height: 1.7;
-    margin-bottom: 4px;
+  color: var(--text-secondary);
+  font-size: 0.95rem;
+  line-height: 1.7;
+  margin-bottom: 4px;
 }
 
 @media (max-width: 600px) {
-    .timeline { grid-template-columns: 1fr; row-gap: 24px; }
-    .timeline-entry { padding-left: 0; border-left: none; }
-    .timeline-entry::before { display: none; }
-    .timeline-dates { padding-top: 0; margin-bottom: 4px; }
+  .timeline {
+    grid-template-columns: 1fr;
+    row-gap: 24px;
+  }
+  .timeline-entry {
+    padding-left: 0;
+    border-left: none;
+  }
+  .timeline-entry::before {
+    display: none;
+  }
+  .timeline-dates {
+    padding-top: 0;
+    margin-bottom: 4px;
+  }
 }
 ```
 
@@ -1053,6 +1092,7 @@ EOF
 ```
 
 Start the server and visit http://localhost:8080. Confirm:
+
 - "EXPERIENCE" heading
 - Dates on the left, company linked to autonomous.ai on the right, italic role, two bullets
 - On mobile width (Chrome devtools, 375px), single-column stack with no rail/dot
@@ -1071,6 +1111,7 @@ git commit -m "implement timeline section and styles"
 ### Task 8: Implement `section_grouped` partial + grouped CSS
 
 **Files:**
+
 - Modify: `templates/section_grouped.html`
 - Modify: `static/style.css`
 
@@ -1079,17 +1120,18 @@ git commit -m "implement timeline section and styles"
 ```html
 {{ define "section_grouped" }}
 <section class="section section-grouped section-{{ .Slug }}">
-    <h2 class="section-title">{{ .Title }}</h2>
-    <div class="grouped">
-        {{ range .Groups }}
-        <div class="grouped-row">
-            <div class="grouped-name">{{ .Name }}</div>
-            <div class="grouped-items">
-                {{ range $i, $item := .Items }}{{ if $i }} · {{ end }}{{ $item }}{{ end }}
-            </div>
-        </div>
-        {{ end }}
+  <h2 class="section-title">{{ .Title }}</h2>
+  <div class="grouped">
+    {{ range .Groups }}
+    <div class="grouped-row">
+      <div class="grouped-name">{{ .Name }}</div>
+      <div class="grouped-items">
+        {{ range $i, $item := .Items }}{{ if $i }} · {{ end }}{{ $item }}{{ end
+        }}
+      </div>
     </div>
+    {{ end }}
+  </div>
 </section>
 {{ end }}
 ```
@@ -1099,30 +1141,35 @@ git commit -m "implement timeline section and styles"
 ```css
 /* === Grouped (Skills) === */
 .grouped {
-    display: grid;
-    grid-template-columns: 110px 1fr;
-    column-gap: 20px;
-    row-gap: 12px;
+  display: grid;
+  grid-template-columns: 110px 1fr;
+  column-gap: 20px;
+  row-gap: 12px;
 }
 .grouped-row {
-    display: contents;
+  display: contents;
 }
 .grouped-name {
-    font-size: 0.75rem;
-    color: var(--text-secondary);
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-    padding-top: 3px;
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding-top: 3px;
 }
 .grouped-items {
-    font-size: 0.95rem;
-    color: var(--text-primary);
-    line-height: 1.7;
+  font-size: 0.95rem;
+  color: var(--text-primary);
+  line-height: 1.7;
 }
 
 @media (max-width: 600px) {
-    .grouped { grid-template-columns: 1fr; row-gap: 16px; }
-    .grouped-name { padding-top: 0; }
+  .grouped {
+    grid-template-columns: 1fr;
+    row-gap: 16px;
+  }
+  .grouped-name {
+    padding-top: 0;
+  }
 }
 ```
 
@@ -1155,6 +1202,7 @@ git commit -m "implement grouped section and styles"
 ### Task 9: Style plain sections + remove legacy `.profile-*` selectors
 
 **Files:**
+
 - Modify: `static/style.css`
 
 The plain partial already exists and renders. This task makes it look right inside the new section card, and removes the now-unused `.profile-*` selectors that were leftover from the single-card layout.
@@ -1173,44 +1221,51 @@ Append to `static/style.css`:
 /* === Plain (About, Projects, Recommendations, Gallery, Contact) === */
 .section-plain h1,
 .section-plain h2 {
-    font-size: 0.85rem;
-    color: var(--text-primary);
-    margin: 0 0 16px;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
+  font-size: 0.85rem;
+  color: var(--text-primary);
+  margin: 0 0 16px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
 }
 .section-plain h3 {
-    font-size: 1rem;
-    color: var(--text-primary);
-    margin: 1.5em 0 0.5em;
-    font-weight: 600;
+  font-size: 1rem;
+  color: var(--text-primary);
+  margin: 1.5em 0 0.5em;
+  font-weight: 600;
 }
 .section-plain p,
 .section-plain li {
-    color: var(--text-secondary);
-    font-size: 0.95rem;
-    line-height: 1.8;
-    font-weight: 400;
+  color: var(--text-secondary);
+  font-size: 0.95rem;
+  line-height: 1.8;
+  font-weight: 400;
 }
 .section-plain ul {
-    padding-left: 18px;
-    margin: 0 0 1em;
+  padding-left: 18px;
+  margin: 0 0 1em;
 }
 .section-plain a {
-    color: var(--text-primary);
-    text-decoration: none;
-    border-bottom: 1px solid var(--link-border);
-    transition: opacity 0.2s;
+  color: var(--text-primary);
+  text-decoration: none;
+  border-bottom: 1px solid var(--link-border);
+  transition: opacity 0.2s;
 }
-.section-plain a:hover { opacity: 0.6; }
-.section-plain > :first-child { margin-top: 0; }
-.section-plain > :last-child { margin-bottom: 0; }
+.section-plain a:hover {
+  opacity: 0.6;
+}
+.section-plain > :first-child {
+  margin-top: 0;
+}
+.section-plain > :last-child {
+  margin-bottom: 0;
+}
 ```
 
 - [ ] **Step 3: Verify build**
 
 Run:
+
 ```bash
 go build ./...
 ```
@@ -1229,6 +1284,7 @@ git commit -m "style plain sections and drop legacy profile-card CSS"
 ### Task 10: Create remaining content files
 
 **Files:**
+
 - Create: `content/02-about.md`, `content/04-education.md`, `content/06-projects.md`, `content/07-recommendations.md`, `content/08-gallery.md`, `content/09-contact.md`
 - Modify: `content/03-experience.md`, `content/05-skills.md` (expand from Task 7/8 smoke-test versions to full CV content)
 
@@ -1360,6 +1416,7 @@ git commit -m "add full portfolio content"
 ### Task 11: Migrate from `profile.md` and final verification
 
 **Files:**
+
 - Delete: `profile.md`
 
 - [ ] **Step 1: Delete the legacy markdown file**
@@ -1379,6 +1436,7 @@ Expected: all `TestLoadSections_*` tests pass.
 - [ ] **Step 3: Manual browser verification**
 
 Start the server:
+
 ```bash
 go run main.go
 ```

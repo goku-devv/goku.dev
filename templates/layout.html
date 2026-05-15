@@ -3,10 +3,13 @@
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Goku | Profile</title>
+        <link rel="icon" href="/static/favicon.png">
+        <title>Goku - Software Engineer</title>
         <link rel="stylesheet" href="/static/style.css">
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
         <link
-            href="https://fonts.googleapis.com/css?family=Inter:400,600,700&display=swap"
+            href="https://fonts.googleapis.com/css2?family=Geist+Mono:wght@400;500;600;700&display=swap"
             rel="stylesheet">
         <script>
         (function() {
@@ -19,17 +22,31 @@
     </head>
     <body>
         <div class="bg-pattern"></div>
-        <button class="theme-toggle" type="button" aria-label="Toggle theme">
-            <svg class="icon-moon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79Z" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
-            <svg class="icon-sun" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="12" r="4" stroke="currentColor" stroke-width="1.6"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+        <button class="theme-toggle" type="button"
+            aria-label="Toggle theme">
+            <svg class="icon-moon" viewBox="0 0 24 24" fill="none"
+                xmlns="http://www.w3.org/2000/svg"><path
+                    d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79Z"
+                    stroke="currentColor" stroke-width="1.6"
+                    stroke-linecap="round" stroke-linejoin="round" /></svg>
+            <svg class="icon-sun" viewBox="0 0 24 24" fill="none"
+                xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="12"
+                    r="4"
+                    stroke="currentColor" stroke-width="1.6" /><path
+                    d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"
+                    stroke="currentColor" stroke-width="1.6"
+                    stroke-linecap="round" /></svg>
         </button>
         <main class="profile-main">
             {{ range .Sections }}
-                {{ if eq .Layout "hero" }}{{ template "section_hero" . }}
-                {{ else if eq .Layout "timeline" }}{{ template "section_timeline" . }}
-                {{ else if eq .Layout "grouped" }}{{ template "section_grouped" . }}
-                {{ else }}{{ template "section_plain" . }}
-                {{ end }}
+            {{ if eq .Layout "hero" }}{{ template "section_hero" . }}
+            {{ else if eq .Layout "timeline" }}{{ template
+            "section_timeline" .
+            }}
+            {{ else if eq .Layout "grouped" }}{{ template "section_grouped"
+            . }}
+            {{ else }}{{ template "section_plain" . }}
+            {{ end }}
             {{ end }}
         </main>
         <script>
@@ -42,6 +59,24 @@
                 var next = current === 'dark' ? 'light' : 'dark';
                 document.documentElement.setAttribute('data-theme', next);
                 localStorage.setItem('theme', next);
+            });
+        });
+        </script>
+        <script>
+        // Gallery slider
+        document.addEventListener('DOMContentLoaded', function() {
+            document.querySelectorAll('.gallery-slider').forEach(function(slider) {
+                var track = slider.querySelector('.gallery-track');
+                var prev = slider.querySelector('.gallery-prev');
+                var next = slider.querySelector('.gallery-next');
+                if (!track) return;
+                var step = function() { return track.clientWidth; };
+                if (prev) prev.addEventListener('click', function() {
+                    track.scrollBy({ left: -step(), behavior: 'smooth' });
+                });
+                if (next) next.addEventListener('click', function() {
+                    track.scrollBy({ left: step(), behavior: 'smooth' });
+                });
             });
         });
         </script>

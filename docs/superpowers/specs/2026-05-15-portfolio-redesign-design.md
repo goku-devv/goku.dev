@@ -47,7 +47,7 @@ layout: hero
 name: goku
 role: Software Engineer
 location: Ho Chi Minh, Viet Nam
-image: /static/goku.png
+image: /static/photos/goku.png
 tagline: Backend developer with 7 years building high-traffic distributed systems.
 ctas:
   - label: hi.im@goku.dev
@@ -203,7 +203,7 @@ Extends the existing `static/style.css`. Keeps the `--bg`, `--card-bg`, `--borde
 
 - **Timeline** — `display: grid; grid-template-columns: 110px 1fr; column-gap: 20px; row-gap: 28px;`. Left column: dates 0.85rem secondary. Right column: company name 0.95rem weight 600 (linked if `url` set, with the existing underline style); role italic 0.9rem secondary; `<ul>` bullets reusing existing body type. A 1px `border-left` on the right column acts as the timeline rail, with a small dot (`::before`, 6px circle, `--text-primary`) at the start of each entry.
 
-- **Grouped** — `display: grid; grid-template-columns: 110px 1fr; row-gap: 12px; column-gap: 20px;`. Left: group name 0.75rem uppercase letter-spacing 0.05em secondary. Right: items joined by ` · ` (middle dot) at 0.95rem.
+- **Grouped** — `display: grid; grid-template-columns: 110px 1fr; row-gap: 12px; column-gap: 20px;`. Left: group name 0.75rem uppercase letter-spacing 0.05em secondary. Right: items joined by `·` (middle dot) at 0.95rem.
 
 - **Plain** — inherits existing `.profile-content` typography rules. Empty body = section renders only its `<h2>` heading (acts as a labeled placeholder).
 
