@@ -30,7 +30,7 @@ type HeroData struct {
 	Location  string
 	Image     string
 	ImageDark string
-	Tagline   string
+	Tagline   template.HTML
 	CTAs      []CTA
 }
 
@@ -130,7 +130,7 @@ func parseSection(filename string, raw []byte) (Section, error) {
 			Location:  meta.Location,
 			Image:     meta.Image,
 			ImageDark: meta.ImageDark,
-			Tagline:   meta.Tagline,
+			Tagline:   renderInline(meta.Tagline),
 			CTAs:      meta.CTAs,
 		}
 	case "timeline":
@@ -144,6 +144,19 @@ func parseSection(filename string, raw []byte) (Section, error) {
 		s.HTML = template.HTML(markdownToHTML(body))
 	}
 	return s, nil
+}
+
+// renderInline parses a short string as markdown and strips the wrapping <p>
+// tag, so the result can sit inside another element (e.g. <p class="hero-tagline">).
+// Empty input returns empty.
+func renderInline(s string) template.HTML {
+	if s == "" {
+		return ""
+	}
+	out := strings.TrimSpace(string(markdownToHTML([]byte(s))))
+	out = strings.TrimPrefix(out, "<p>")
+	out = strings.TrimSuffix(out, "</p>")
+	return template.HTML(out)
 }
 
 func slugFromFilename(name string) string {
