@@ -1,1 +1,17 @@
-{{ define "section_hero" }}{{ end }}
+{{ define "section_hero" }}
+{{ with .Hero }}
+<section class="section section-hero">
+    <div class="hero-img-wrapper">
+        <img src="{{ .Image }}" alt="{{ .Name }}">
+    </div>
+    <h1 class="hero-name">{{ .Name }}</h1>
+    <p class="hero-meta">{{ .Role }} · {{ .Location }}</p>
+    {{ if .Tagline }}<p class="hero-tagline">{{ .Tagline }}</p>{{ end }}
+    {{ if .CTAs }}
+    <p class="hero-ctas">
+        {{ range $i, $c := .CTAs }}{{ if $i }} {{ end }}<a href="{{ $c.URL }}">{{ $c.Label }}</a>{{ end }}
+    </p>
+    {{ end }}
+</section>
+{{ end }}
+{{ end }}

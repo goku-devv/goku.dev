@@ -1,12 +1,64 @@
+:root {
+    --bg: #fff;
+    --card-bg: #fff;
+    --border: #e5e5e5;
+    --text-primary: #000;
+    --text-secondary: #666;
+    --link-border: #000;
+}
+[data-theme="dark"] {
+    --bg: #0e0e0e;
+    --card-bg: #161616;
+    --border: #2a2a2a;
+    --text-primary: #f2f2f2;
+    --text-secondary: #a0a0a0;
+    --link-border: #f2f2f2;
+}
 body {
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-    background: #fff;
+    background: var(--bg);
+    color: var(--text-primary);
     margin: 0;
     padding: 0;
     min-height: 100vh;
     position: relative;
+    transition: background 0.2s ease, color 0.2s ease;
 }
 .bg-pattern {
+    display: none;
+}
+.theme-toggle {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    width: 38px;
+    height: 38px;
+    border: 1px solid var(--border);
+    background: var(--card-bg);
+    color: var(--text-primary);
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    z-index: 10;
+    transition: opacity 0.2s ease, background 0.2s ease, border-color 0.2s ease;
+}
+.theme-toggle:hover {
+    opacity: 0.7;
+}
+.theme-toggle svg {
+    width: 18px;
+    height: 18px;
+}
+.theme-toggle .icon-sun {
+    display: none;
+}
+[data-theme="dark"] .theme-toggle .icon-sun {
+    display: block;
+}
+[data-theme="dark"] .theme-toggle .icon-moon {
     display: none;
 }
 .profile-main {
@@ -19,8 +71,8 @@ body {
     padding: 60px 20px;
 }
 .profile-card {
-    background: #fff;
-    border: 1px solid #e5e5e5;
+    background: var(--card-bg);
+    border: 1px solid var(--border);
     padding: 60px 40px;
     max-width: 480px;
     width: 100%;
@@ -28,13 +80,14 @@ body {
     flex-direction: column;
     align-items: center;
     position: relative;
+    transition: background 0.2s ease, border-color 0.2s ease;
 }
 .profile-img-wrapper {
     width: 100px;
     height: 100px;
     margin-bottom: 32px;
-    border: 1px solid #e5e5e5;
-    background: #fff;
+    border: 1px solid var(--border);
+    background: var(--card-bg);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -49,14 +102,14 @@ body {
 .profile-content h1 {
     font-size: 1.8rem;
     margin-bottom: 0.8em;
-    color: #000;
+    color: var(--text-primary);
     font-weight: 600;
     letter-spacing: -0.02em;
     text-align: center;
 }
 .profile-content h2 {
     font-size: 0.85rem;
-    color: #000;
+    color: var(--text-primary);
     margin-top: 2.5em;
     margin-bottom: 1em;
     text-align: left;
@@ -65,7 +118,7 @@ body {
     letter-spacing: 0.05em;
 }
 .profile-content p, .profile-content li {
-    color: #666;
+    color: var(--text-secondary);
     font-size: 0.95rem;
     line-height: 1.8;
     font-weight: 400;
@@ -76,9 +129,9 @@ body {
     list-style: none;
 }
 .profile-content a {
-    color: #000;
+    color: var(--text-primary);
     text-decoration: none;
-    border-bottom: 1px solid #000;
+    border-bottom: 1px solid var(--link-border);
     transition: opacity 0.2s;
 }
 .profile-content a:hover {
@@ -95,7 +148,7 @@ body {
     transition: opacity 0.2s;
     font-size: 0.95rem;
     gap: 8px;
-    border-bottom: 1px solid #000;
+    border-bottom: 1px solid var(--link-border);
 }
 .profile-content li a svg {
     width: 16px;
@@ -104,7 +157,7 @@ body {
 }
 .profile-content li a:hover {
     background: none;
-    color: #000;
+    color: var(--text-primary);
     opacity: 0.6;
 }
 /* Section divider */
@@ -133,4 +186,92 @@ body {
     .profile-main {
         padding: 40px 20px;
     }
-} 
+    .theme-toggle {
+        top: 12px;
+        right: 12px;
+        width: 34px;
+        height: 34px;
+    }
+}
+
+/* === Section shell === */
+.section {
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    padding: 48px 40px;
+    width: 100%;
+    box-sizing: border-box;
+    transition: background 0.2s ease, border-color 0.2s ease;
+}
+.profile-main {
+    flex-direction: column;
+    gap: 24px;
+    max-width: 560px;
+    margin: 0 auto;
+}
+
+/* === Hero === */
+.section-hero {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    padding: 60px 40px;
+}
+.hero-img-wrapper {
+    width: 100px;
+    height: 100px;
+    margin-bottom: 28px;
+    border: 1px solid var(--border);
+    overflow: hidden;
+}
+.hero-img-wrapper img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+.hero-name {
+    font-size: 1.8rem;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    margin: 0 0 0.5em;
+    color: var(--text-primary);
+}
+.hero-meta {
+    font-size: 0.95rem;
+    color: var(--text-secondary);
+    margin: 0 0 1em;
+}
+.hero-tagline {
+    font-size: 0.95rem;
+    line-height: 1.6;
+    color: var(--text-primary);
+    margin: 0 0 1.5em;
+}
+.hero-ctas {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 16px;
+    margin: 0;
+}
+.hero-ctas a {
+    color: var(--text-primary);
+    text-decoration: none;
+    border-bottom: 1px solid var(--link-border);
+    transition: opacity 0.2s;
+    font-size: 0.95rem;
+}
+.hero-ctas a:hover { opacity: 0.6; }
+
+@media (max-width: 600px) {
+    .section {
+        padding: 36px 24px;
+        border-left: none;
+        border-right: none;
+    }
+    .section-hero { padding: 40px 24px; }
+    .hero-img-wrapper { width: 80px; height: 80px; margin-bottom: 24px; }
+    .hero-name { font-size: 1.5rem; }
+}
