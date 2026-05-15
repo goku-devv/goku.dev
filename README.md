@@ -47,12 +47,12 @@ goku.dev/
 
 Every file in `content/` becomes one `<section>` on the page. Files without YAML frontmatter render as plain markdown. Files with frontmatter dispatch on `layout:`:
 
-| layout | Used for | Frontmatter shape |
-|--------|---------|--------------------|
-| `hero` | Top of page | `name`, `role`, `location`, `image`, `tagline`, `ctas: [{label, url}]` |
-| `timeline` | Experience, Education | `title`, `entries: [{company, dates, role, url, bullets}]` |
-| `grouped` | Skills | `title`, `groups: [{name, items}]` |
-| _omitted_ | About, Gallery, Contact | none — body rendered as markdown |
+| layout     | Used for                | Frontmatter shape                                                      |
+| ---------- | ----------------------- | ---------------------------------------------------------------------- |
+| `hero`     | Top of page             | `name`, `role`, `location`, `image`, `tagline`, `ctas: [{label, url}]` |
+| `timeline` | Experience, Education   | `title`, `entries: [{company, dates, role, url, bullets}]`             |
+| `grouped`  | Skills                  | `title`, `groups: [{name, items}]`                                     |
+| _omitted_  | About, Gallery, Contact | none — body rendered as markdown                                       |
 
 Filenames use a numeric `NN-` prefix to control render order. Gaps are allowed — drop a file to skip a section.
 
@@ -100,56 +100,6 @@ make clean         # remove binaries
 Light/dark theme is driven by a `data-theme` attribute on `<html>`. An inline `<script>` in `<head>` reads `localStorage.theme` (falling back to `prefers-color-scheme`) and sets it before paint, preventing FOUC. The toggle button in the top-right flips and persists.
 
 CSS uses six variables (`--bg`, `--card-bg`, `--border`, `--text-primary`, `--text-secondary`, `--link-border`) overridden under `[data-theme="dark"]`.
-
-## Deploy
-
-`scripts/deploy.sh` (gitignored) builds the Linux binary and uploads `profilepage` + `content/` + `templates/` + `static/` over `scp`. Supports password auth via `sshpass` (env var `DEPLOY_PASSWORD` or `$1`), or SSH key auth when neither is set.
-
-```bash
-DEPLOY_PASSWORD='...' ./scripts/deploy.sh
-# or, key auth:
-./scripts/deploy.sh
-```
-
-## Run as a systemd service
-
-`/etc/systemd/system/goku.service`:
-
-```ini
-[Unit]
-Description=goku.dev
-After=network.target
-
-[Service]
-Type=simple
-WorkingDirectory=/root/goku
-ExecStart=/root/goku/profilepage
-Restart=always
-
-[Install]
-WantedBy=multi-user.target
-```
-
-```bash
-systemctl daemon-reload
-systemctl enable --now goku
-```
-
-## Reverse proxy (nginx)
-
-```nginx
-server {
-    listen 80;
-    server_name goku.dev;
-
-    location / {
-        proxy_pass http://localhost:8080;
-        proxy_set_header Host $host;
-        proxy_set_header X-Real-IP $remote_addr;
-        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-    }
-}
-```
 
 ## Author
 

@@ -1,8 +1,9 @@
 {{ define "section_hero" }}
 {{ with .Hero }}
 <section class="section section-hero">
-    <div class="hero-img-wrapper">
-        <img src="{{ .Image }}" alt="{{ .Name }}">
+    <div class="hero-img-wrapper{{ if .ImageDark }} hero-img-wrapper--themed{{ end }}">
+        <img class="hero-img hero-img-light" src="{{ .Image }}" alt="{{ .Name }}">
+        {{ if .ImageDark }}<img class="hero-img hero-img-dark" src="{{ .ImageDark }}" alt="{{ .Name }}">{{ end }}
     </div>
     <h1 class="hero-name">{{ .Name }}</h1>
     <p class="hero-meta">{{ .Role }} · {{ .Location }}</p>

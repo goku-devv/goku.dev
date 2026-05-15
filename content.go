@@ -25,12 +25,13 @@ type Section struct {
 }
 
 type HeroData struct {
-	Name     string
-	Role     string
-	Location string
-	Image    string
-	Tagline  string
-	CTAs     []CTA
+	Name      string
+	Role      string
+	Location  string
+	Image     string
+	ImageDark string
+	Tagline   string
+	CTAs      []CTA
 }
 
 type CTA struct {
@@ -52,16 +53,17 @@ type SkillGroup struct {
 }
 
 type frontmatter struct {
-	Layout   string          `yaml:"layout"`
-	Title    string          `yaml:"title"`
-	Name     string          `yaml:"name"`
-	Role     string          `yaml:"role"`
-	Location string          `yaml:"location"`
-	Image    string          `yaml:"image"`
-	Tagline  string          `yaml:"tagline"`
-	CTAs     []CTA           `yaml:"ctas"`
-	Entries  []TimelineEntry `yaml:"entries"`
-	Groups   []SkillGroup    `yaml:"groups"`
+	Layout    string          `yaml:"layout"`
+	Title     string          `yaml:"title"`
+	Name      string          `yaml:"name"`
+	Role      string          `yaml:"role"`
+	Location  string          `yaml:"location"`
+	Image     string          `yaml:"image"`
+	ImageDark string          `yaml:"image_dark"`
+	Tagline   string          `yaml:"tagline"`
+	CTAs      []CTA           `yaml:"ctas"`
+	Entries   []TimelineEntry `yaml:"entries"`
+	Groups    []SkillGroup    `yaml:"groups"`
 }
 
 func LoadSections(dir string) ([]Section, error) {
@@ -123,12 +125,13 @@ func parseSection(filename string, raw []byte) (Section, error) {
 	case "hero":
 		s.Layout = "hero"
 		s.Hero = &HeroData{
-			Name:     meta.Name,
-			Role:     meta.Role,
-			Location: meta.Location,
-			Image:    meta.Image,
-			Tagline:  meta.Tagline,
-			CTAs:     meta.CTAs,
+			Name:      meta.Name,
+			Role:      meta.Role,
+			Location:  meta.Location,
+			Image:     meta.Image,
+			ImageDark: meta.ImageDark,
+			Tagline:   meta.Tagline,
+			CTAs:      meta.CTAs,
 		}
 	case "timeline":
 		s.Layout = "timeline"
