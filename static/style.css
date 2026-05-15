@@ -350,3 +350,31 @@ body {
     .timeline-entry::before { display: none; }
     .timeline-dates { padding-top: 0; margin-bottom: 4px; }
 }
+
+/* === Grouped (Skills) === */
+.grouped {
+    display: grid;
+    grid-template-columns: 110px 1fr;
+    column-gap: 20px;
+    row-gap: 12px;
+}
+.grouped-row {
+    display: contents;
+}
+.grouped-name {
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    padding-top: 3px;
+}
+.grouped-items {
+    font-size: 0.95rem;
+    color: var(--text-primary);
+    line-height: 1.7;
+}
+
+@media (max-width: 600px) {
+    .grouped { grid-template-columns: 1fr; row-gap: 16px; }
+    .grouped-name { padding-top: 0; }
+}

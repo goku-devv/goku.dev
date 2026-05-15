@@ -1,1 +1,15 @@
-{{ define "section_grouped" }}{{ end }}
+{{ define "section_grouped" }}
+<section class="section section-grouped section-{{ .Slug }}">
+    <h2 class="section-title">{{ .Title }}</h2>
+    <div class="grouped">
+        {{ range .Groups }}
+        <div class="grouped-row">
+            <div class="grouped-name">{{ .Name }}</div>
+            <div class="grouped-items">
+                {{ range $i, $item := .Items }}{{ if $i }} · {{ end }}{{ $item }}{{ end }}
+            </div>
+        </div>
+        {{ end }}
+    </div>
+</section>
+{{ end }}
