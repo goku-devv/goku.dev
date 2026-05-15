@@ -4,7 +4,6 @@ import (
 	"html/template"
 	"log"
 	"net/http"
-	"os"
 
 	"github.com/gomarkdown/markdown"
 	"github.com/gomarkdown/markdown/html"
@@ -12,7 +11,7 @@ import (
 )
 
 type PageData struct {
-	Content template.HTML
+	Sections []Section
 }
 
 func markdownToHTML(md []byte) []byte {
@@ -33,46 +32,31 @@ func homeHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Read markdown file
-	mdContent, err := os.ReadFile("profile.md")
+	sections, err := LoadSections("content")
 	if err != nil {
-		http.Error(w, "Error reading markdown file", http.StatusInternalServerError)
-		log.Printf("Error reading profile.md: %v", err)
+		http.Error(w, "Error loading content", http.StatusInternalServerError)
+		log.Printf("LoadSections: %v", err)
 		return
 	}
 
-	// Convert markdown to HTML
-	htmlContent := markdownToHTML(mdContent)
-
-	// Parse template
-	tmpl, err := template.ParseFiles("templates/layout.html")
+	tmpl, err := template.ParseGlob("templates/*.html")
 	if err != nil {
-		http.Error(w, "Error parsing template", http.StatusInternalServerError)
-		log.Printf("Error parsing template: %v", err)
+		http.Error(w, "Error parsing templates", http.StatusInternalServerError)
+		log.Printf("ParseGlob: %v", err)
 		return
 	}
 
-	// Prepare data
-	data := PageData{
-		Content: template.HTML(htmlContent),
-	}
-
-	// Render template
-	if err := tmpl.Execute(w, data); err != nil {
+	if err := tmpl.ExecuteTemplate(w, "layout.html", PageData{Sections: sections}); err != nil {
 		http.Error(w, "Error rendering template", http.StatusInternalServerError)
-		log.Printf("Error executing template: %v", err)
+		log.Printf("ExecuteTemplate: %v", err)
 		return
 	}
 }
 
 func main() {
-	// Serve static files
 	fs := http.FileServer(http.Dir("static"))
 	http.Handle("/static/", http.StripPrefix("/static/", fs))
-
-	// Home page handler
 	http.HandleFunc("/", homeHandler)
-
 	log.Println("Server starting on http://localhost:8080")
 	if err := http.ListenAndServe(":8080", nil); err != nil {
 		log.Fatal(err)
