@@ -1,143 +1,141 @@
 # goku.dev
 
-A lightweight, personal profile website built with Go. This application serves a markdown-based profile page with a clean, responsive design.
+Personal portfolio site. Multi-section markdown-driven layout served by a small Go HTTP server. Light/dark theme, Geist Mono typography, no build pipeline, no JS framework.
 
-## Features
+## Stack
 
-- **Markdown-driven content**: Edit your profile in [profile.md](profile.md) using simple markdown syntax
-- **Go-powered**: Fast, efficient web server with minimal dependencies
-- **Responsive design**: Clean, modern UI that works on all devices
-- **Static asset support**: Serves CSS, images, and other static files
-- **Single binary deployment**: Compile to a single executable for easy deployment
+- **Go 1.24** — `net/html/template`, `net/http`
+- **[gomarkdown/markdown](https://github.com/gomarkdown/markdown)** — markdown rendering
+- **[gopkg.in/yaml.v3](https://gopkg.in/yaml.v3)** — frontmatter parsing
+- Vanilla CSS + ~50 lines of inline JS (theme toggle, gallery slider, social-icon enhance)
 
-## Prerequisites
-
-- Go 1.24.2 or higher
-- Git (for cloning the repository)
-
-## Quick Start
-
-### Development
-
-1. **Clone the repository**
-   ```bash
-   git clone https://github.com/goku-devv/goku.dev.git
-   cd goku.dev
-   ```
-
-2. **Install dependencies**
-   ```bash
-   go mod download
-   ```
-
-3. **Run the server**
-   ```bash
-   go run main.go
-   ```
-
-4. **Visit your profile**
-
-   Open your browser and navigate to `http://localhost:8080`
-
-### Customizing Your Profile
-
-Edit [profile.md](profile.md) to update your profile content. The server will read this file on each request, so you can modify it while the server is running.
-
-## Project Structure
+## Project layout
 
 ```
 goku.dev/
-├── main.go              # Main application code
-├── profile.md           # Your profile content (markdown)
+├── main.go                 HTTP server, handler, markdown renderer
+├── content.go              LoadSections() — globs content/*.md, parses
+│                           frontmatter, dispatches per-section types
+├── content_test.go
+├── content/                Each file = one section, ordered by NN- prefix
+│   ├── 01-hero.md          layout: hero
+│   ├── 02-about.md         plain markdown
+│   ├── 03-experience.md    layout: timeline
+│   ├── 04-education.md     layout: timeline
+│   ├── 05-skills.md        layout: grouped
+│   ├── 08-gallery.md       plain markdown + raw HTML slider
+│   └── 09-contact.md       plain markdown
 ├── templates/
-│   └── layout.html      # HTML template
+│   ├── layout.html         outer shell, theme toggle, dispatcher
+│   ├── section_hero.html
+│   ├── section_timeline.html
+│   ├── section_grouped.html
+│   └── section_plain.html
 ├── static/
-│   ├── style.css        # Stylesheet
-│   └── goku.jpg         # Profile image
-├── go.mod               # Go module definition
-└── go.sum               # Go module checksums
+│   ├── style.css
+│   ├── favicon.png
+│   └── photos/             profile + gallery images
+├── scripts/
+│   └── deploy.sh           gitignored — see Deploy
+├── docs/superpowers/       design spec + implementation plan
+├── Makefile
+├── go.mod
+└── go.sum
 ```
 
-## Building for Production
+## Section model
 
-### Build for Current Platform
+Every file in `content/` becomes one `<section>` on the page. Files without YAML frontmatter render as plain markdown. Files with frontmatter dispatch on `layout:`:
+
+| layout | Used for | Frontmatter shape |
+|--------|---------|--------------------|
+| `hero` | Top of page | `name`, `role`, `location`, `image`, `tagline`, `ctas: [{label, url}]` |
+| `timeline` | Experience, Education | `title`, `entries: [{company, dates, role, url, bullets}]` |
+| `grouped` | Skills | `title`, `groups: [{name, items}]` |
+| _omitted_ | About, Gallery, Contact | none — body rendered as markdown |
+
+Filenames use a numeric `NN-` prefix to control render order. Gaps are allowed — drop a file to skip a section.
+
+Example `03-experience.md`:
+
+```yaml
+---
+title: Experience
+layout: timeline
+entries:
+  - company: Autonomous Inc.
+    dates: Dec 2020 – Present
+    role: Senior Software Engineer
+    url: https://autonomous.ai
+    bullets:
+      - Maintain a high-traffic monolithic eCommerce system.
+      - Led migration to microservices architecture.
+---
+```
+
+A bad YAML block in a single file is logged and that section is skipped — the rest of the page still renders.
+
+## Quick start
 
 ```bash
-go build -o profile main.go
+git clone https://github.com/goku-devv/goku.dev.git
+cd goku.dev
+make run
 ```
 
-### Cross-Platform Builds
+Visit http://localhost:8080. Templates and content are reloaded per request, so edit `content/*.md`, `templates/*.html`, or `static/style.css` and reload — no restart needed.
 
-**Linux (64-bit)**
+## Make targets
+
 ```bash
-GOOS=linux GOARCH=amd64 go build -o profile main.go
+make build         # local binary -> ./profilepage
+make build-linux   # cross-compile -> ./profilepage (linux/amd64, static, stripped)
+make run           # go run .
+make test          # go test ./...
+make clean         # remove binaries
 ```
 
-**Windows (64-bit)**
+## Theme
+
+Light/dark theme is driven by a `data-theme` attribute on `<html>`. An inline `<script>` in `<head>` reads `localStorage.theme` (falling back to `prefers-color-scheme`) and sets it before paint, preventing FOUC. The toggle button in the top-right flips and persists.
+
+CSS uses six variables (`--bg`, `--card-bg`, `--border`, `--text-primary`, `--text-secondary`, `--link-border`) overridden under `[data-theme="dark"]`.
+
+## Deploy
+
+`scripts/deploy.sh` (gitignored) builds the Linux binary and uploads `profilepage` + `content/` + `templates/` + `static/` over `scp`. Supports password auth via `sshpass` (env var `DEPLOY_PASSWORD` or `$1`), or SSH key auth when neither is set.
+
 ```bash
-GOOS=windows GOARCH=amd64 go build -o profile.exe main.go
+DEPLOY_PASSWORD='...' ./scripts/deploy.sh
+# or, key auth:
+./scripts/deploy.sh
 ```
 
-**macOS (Intel)**
-```bash
-GOOS=darwin GOARCH=amd64 go build -o profile main.go
-```
+## Run as a systemd service
 
-**macOS (Apple Silicon)**
-```bash
-GOOS=darwin GOARCH=arm64 go build -o profile main.go
-```
-
-## Deployment
-
-### Linux Server Deployment
-
-1. **Build the Linux binary**
-   ```bash
-   GOOS=linux GOARCH=amd64 go build -o profile main.go
-   ```
-
-2. **Transfer files to your server**
-   ```bash
-   scp profile user@server:/path/to/app/
-   scp profile.md user@server:/path/to/app/
-   scp -r templates/ user@server:/path/to/app/
-   scp -r static/ user@server:/path/to/app/
-   ```
-
-3. **Run on the server**
-   ```bash
-   chmod +x profile
-   ./profile
-   ```
-
-### Running as a Service (systemd)
-
-Create a systemd service file at `/etc/systemd/system/goku-profile.service`:
+`/etc/systemd/system/goku.service`:
 
 ```ini
 [Unit]
-Description=Goku Profile Website
+Description=goku.dev
 After=network.target
 
 [Service]
 Type=simple
-User=www-data
-WorkingDirectory=/path/to/app
-ExecStart=/path/to/app/profile
+WorkingDirectory=/root/goku
+ExecStart=/root/goku/profilepage
 Restart=always
 
 [Install]
 WantedBy=multi-user.target
 ```
 
-Enable and start the service:
 ```bash
-sudo systemctl enable goku-profile
-sudo systemctl start goku-profile
+systemctl daemon-reload
+systemctl enable --now goku
 ```
 
-### Reverse Proxy with Nginx
+## Reverse proxy (nginx)
 
 ```nginx
 server {
@@ -153,36 +151,12 @@ server {
 }
 ```
 
-## Dependencies
-
-- [gomarkdown/markdown](https://github.com/gomarkdown/markdown) - Markdown parsing and rendering
-
-## Configuration
-
-The server runs on port **8080** by default. To change the port, modify line 77 in [main.go](main.go):
-
-```go
-http.ListenAndServe(":8080", nil)  // Change port here
-```
-
-## Development Tips
-
-- The server logs all requests and errors to stdout
-- External links in markdown automatically open in new tabs
-- Markdown headings automatically get IDs for anchor linking
-- Static files are served from the `/static/` URL path
-
-## License
-
-MIT License - feel free to use this for your own profile website!
-
 ## Author
 
-**Goku**
 - Email: hi.im@goku.dev
 - X: [@goku_dev](https://x.com/goku_dev)
 - GitHub: [@goku-devv](https://github.com/goku-devv)
 
----
+## License
 
-Built with ❤️ using Go
+MIT.

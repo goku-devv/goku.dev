@@ -1,3 +1,5 @@
-goku.dev
+*
+!/**/
+!*.*
 .claude
-scripts/deploy.sh
+scripts/
