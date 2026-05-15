@@ -1,1 +1,23 @@
-{{ define "section_timeline" }}{{ end }}
+{{ define "section_timeline" }}
+<section class="section section-timeline section-{{ .Slug }}">
+    <h2 class="section-title">{{ .Title }}</h2>
+    <div class="timeline">
+        {{ range .Entries }}
+        <div class="timeline-row">
+            <div class="timeline-dates">{{ .Dates }}</div>
+            <div class="timeline-entry">
+                <div class="timeline-company">
+                    {{ if .URL }}<a href="{{ .URL }}">{{ .Company }}</a>{{ else }}{{ .Company }}{{ end }}
+                </div>
+                {{ if .Role }}<div class="timeline-role">{{ .Role }}</div>{{ end }}
+                {{ if .Bullets }}
+                <ul class="timeline-bullets">
+                    {{ range .Bullets }}<li>{{ . }}</li>{{ end }}
+                </ul>
+                {{ end }}
+            </div>
+        </div>
+        {{ end }}
+    </div>
+</section>
+{{ end }}
