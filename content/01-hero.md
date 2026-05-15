@@ -1,6 +1,6 @@
 ---
 layout: hero
-name: goku
+name: "#goku"
 role: Software Engineer
 location: Ho Chi Minh, Viet Nam
 image: /static/photos/goku.png
