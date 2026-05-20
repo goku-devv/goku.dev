@@ -93,24 +93,6 @@
         });
         </script>
         <script>
-        // Gallery slider
-        document.addEventListener('DOMContentLoaded', function() {
-            document.querySelectorAll('.gallery-slider').forEach(function(slider) {
-                var track = slider.querySelector('.gallery-track');
-                var prev = slider.querySelector('.gallery-prev');
-                var next = slider.querySelector('.gallery-next');
-                if (!track) return;
-                var step = function() { return track.clientWidth; };
-                if (prev) prev.addEventListener('click', function() {
-                    track.scrollBy({ left: -step(), behavior: 'smooth' });
-                });
-                if (next) next.addEventListener('click', function() {
-                    track.scrollBy({ left: step(), behavior: 'smooth' });
-                });
-            });
-        });
-        </script>
-        <script>
         // Enhance social links with SVG icons
         document.addEventListener('DOMContentLoaded', function() {
             const icons = {
