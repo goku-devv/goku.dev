@@ -17,3 +17,6 @@ test:
 
 clean:
 	rm -f $(BINARY) $(BINARY)-linux-amd64
+
+deploy:
+	DEPLOY_PASSWORD='...' bash scripts/deploy.sh
