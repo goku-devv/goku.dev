@@ -5,7 +5,7 @@ collapse: true
 
 ### One checkout, twelve ways to pay
 
-*Payments&nbsp;· Storefront API&nbsp;· 2022–2026*
+*Payments · Storefront API · 2022–2026*
 
 **Problem** Checkout is where every domain meets: cart, pricing, customer, stock and a dozen payment methods. It still has to feel like one call. A double-click must never create two orders, and a failed card may fall back to another processor, but never when that could authorise the same card twice.
 
@@ -33,7 +33,7 @@ order event → async workers
 
 ### One chassis for ~40 Go services
 
-*Platform&nbsp;· Framework&nbsp;· 2021–2026*
+*Platform · Framework · 2021–2026*
 
 **Problem** About 40 Go services and Pub/Sub workers, run by a small team. Each needs the same lifecycle, drivers, validation, tracing and telemetry, and copying that 40 times produces 40 slightly different versions.
 
@@ -60,7 +60,7 @@ service = chassis + domain logic
 
 ### Letting AI agents run commerce operations, safely
 
-*AI agents&nbsp;· MCP&nbsp;· 2026*
+*AI agents · MCP · 2026*
 
 **Problem** Support bots and internal agents needed to look up orders, shipments and payments, and sometimes act on them, without anyone clicking through the admin console and without handing an LLM a master key.
 
@@ -87,7 +87,7 @@ agent / support bot → MCP → gateway
 
 ### Agents as teammates
 
-*AI operations&nbsp;· Claude Code&nbsp;· 2026*
+*AI operations · Claude Code · 2026*
 
 **Problem** Seven teams (growth, customer support, operations, bulk sales, a product line, finance, HR) each had an AI assistant on a third-party agent runtime, and engineers were handing real work to a coding agent across ~50 repositories. Both needed clear rules, the right tools, and a safe way to change them.
 
