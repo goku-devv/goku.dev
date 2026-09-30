@@ -39,10 +39,6 @@
             // Light by default; only an explicit toggle choice (saved) switches to dark.
             var theme = localStorage.getItem('theme') === 'dark' ? 'dark' : 'light';
             document.documentElement.setAttribute('data-theme', theme);
-            var favicon = document.getElementById('favicon');
-            if (favicon) {
-                favicon.href = theme === 'dark' ? '/static/favicon_dark.png' : '/static/favicon.png';
-            }
             // Entrance motion is opt-in: hide-before-reveal only when it can actually play.
             if ('IntersectionObserver' in window && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
                 document.documentElement.classList.add('anim');
@@ -204,10 +200,6 @@
                 var apply = function() {
                     root.setAttribute('data-theme', next);
                     localStorage.setItem('theme', next);
-                    var favicon = document.getElementById('favicon');
-                    if (favicon) {
-                        favicon.href = next === 'dark' ? '/static/favicon_dark.png' : '/static/favicon.png';
-                    }
                     label();
                 };
                 if (!document.startViewTransition || window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
