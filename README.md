@@ -95,7 +95,7 @@ make clean         # remove binaries
 
 ## Theme
 
-Light/dark theme is driven by a `data-theme` attribute on `<html>`. An inline `<script>` in `<head>` reads `localStorage.theme` (falling back to `prefers-color-scheme`) and sets it before paint, preventing FOUC. The square toggle in the cover's top row flips and persists, revealing the new theme as a growing circle (View Transitions API; instant where unsupported or with reduced motion).
+Light/dark theme is driven by a `data-theme` attribute on `<html>`. An inline `<script>` in `<head>` reads `localStorage.theme` (light by default — the OS `prefers-color-scheme` is deliberately ignored) and sets it before paint, preventing FOUC. The square toggle in the cover's top row flips and persists, revealing the new theme as a growing circle (View Transitions API; instant where unsupported or with reduced motion).
 
 CSS uses five theme variables (`--bg`, `--ink`, `--ink-soft`, `--grid`, `--ink-faint`) overridden under `[data-theme="dark"]`, which inverts the two inks (cream on cobalt).
 
