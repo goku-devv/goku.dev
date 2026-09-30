@@ -1,6 +1,6 @@
 ## Selected Work
 
-### Checkout that fails over without charging twice
+### One checkout, twelve ways to pay
 
 *Payments · Storefront API · 2022–2026*
 
