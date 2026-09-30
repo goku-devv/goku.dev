@@ -143,3 +143,32 @@ storefront · admin · CLI
     public key only
 revoke → takes effect at the next refresh
 ```
+
+### One tracking record per parcel
+
+*Fulfillment · Integrations · 2022–2026*
+
+**Problem** Parcels ship through parcel carriers, LTL freight carriers and vendors' own store platforms, and only some of them push updates. The shop needs one tracking record per shipment, delivery has to move the order forward, returns need tracking too, stuck parcels have to surface without anyone checking by hand, and pushed and polled updates must never overwrite each other.
+
+**Role** Built the tracking service and the webhook ingest from their first commits in 2022. Took over the multi-carrier poller in late 2024, rebuilt its engine and wrote ~85% of its commits since. The carrier API clients and the first poller were a teammate's.
+
+**Decisions**
+
+- **One path per shipment.** Parcels labelled through the webhook-capable provider are updated only by webhooks; everything else is polled. *Trade-off: two code paths, and if webhooks stop arriving the poller does not fill the gap.*
+- **Store first, then queue.** The ingest saves every raw event before publishing it, so the carrier gets a fast answer and there is always a replay trail; the consumer acknowledges only after processing. *Trade-off: no de-duplication on event id, so downstream writes must be idempotent.*
+- **One system of record.** The tracking service writes with compare-and-swap (a stale update is rejected), keeps an audit row and emits a status event that moves the order forward, without knowing anything about orders. *Trade-off: a writer that loses the race re-reads and retries.*
+- **One lane per carrier account.** A slow or rate-limited carrier holds up only its own lane. The rewrite gave each run its own state and folded forward and return tracking into one engine (+637 / −753 lines). *Trade-off: one request in flight per account, so throughput is capped on purpose.*
+- **People confirm stock.** Inbound container arrivals are recorded and ops are alerted, but stock is not booked automatically: a delivery scan means the truck arrived, not that anyone counted the goods. Auto-confirm was built, then switched off the next day. *Trade-off: a person confirms every arrival.*
+
+**Outcome** Eight carrier and store-platform adapters across ten lanes, including the two LTL freight adapters I wrote. Stuck parcels are detected and reported automatically, and returns update the shipment and notify the vendor. Built and run over four years.
+
+```text
+carrier webhook → ingest
+  store raw event → queue → worker
+scheduled poller (non-webhook parcels)
+  one lane per carrier account
+  both paths write to:
+tracking service: CAS write · audit
+  → status event → order moves forward
+stuck parcels → ops report
+```
