@@ -151,7 +151,7 @@ button:focus-visible {
     min-height: 100svh;
     display: grid;
     grid-template-rows: auto 1fr auto;
-    gap: 48px;
+    gap: 40px;
     padding: 64px 80px;
 }
 .hair {
@@ -170,9 +170,10 @@ button:focus-visible {
 /* Pixel-glitch column: stair-stepped scanline blocks down the right edge */
 .glitch {
     position: absolute;
-    top: 0;
-    bottom: 0;
-    right: 0;
+    top: -40px;
+    bottom: -40px;
+    right: -80px;
+    z-index: -1;
     width: 30vw;
     display: flex;
     flex-direction: column;
@@ -194,7 +195,9 @@ button:focus-visible {
 }
 .cover-top {
     display: flex;
+    flex-wrap: wrap;
     align-items: center;
+    gap: 8px 24px;
     min-height: 44px;
     padding-right: 64px;
 }
@@ -316,7 +319,8 @@ button:focus-visible {
 .hero-ctas {
     display: flex;
     flex-wrap: wrap;
-    gap: 12px 32px;
+    gap: 8px 24px;
+    margin-left: auto;
 }
 .hero-ctas a {
     font: 400 13px/1.4 var(--mono);
@@ -329,6 +333,119 @@ button:focus-visible {
 }
 .hero-ctas a:hover {
     text-decoration: none;
+}
+
+/* === Follow a request — the hero's blueprint strip ===
+   REQUEST → API → QUEUE ┄→ WORKER → DATABASE, with a TRACE rail under
+   API..WORKER. Nodes are buttons; the caption explains the hovered/focused
+   node; "Follow a request" walks one demo run (see layout.html). */
+.flow {
+    position: relative;
+    z-index: 1;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 300px;
+    gap: 16px 40px;
+    align-items: start;
+    padding-top: 22px;
+    border-top: 1.5px solid var(--ink);
+}
+.flow-map {
+    position: relative;
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    grid-template-rows: auto 26px auto;
+    column-gap: 28px;
+}
+.flow-node {
+    position: relative;
+    z-index: 1;
+    min-height: 44px;
+    padding: 0 10px;
+    border: 1.5px solid var(--ink);
+    border-radius: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font: 400 12px/1 var(--mono);
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    cursor: pointer;
+}
+.flow-node:hover,
+.flow-node:focus-visible,
+.flow-node.is-on {
+    background: var(--ink);
+    color: var(--bg);
+}
+/* main line: each node draws the wire to its right neighbour */
+.flow-node[data-step]:not([data-step="4"])::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 100%;
+    width: 28px;
+    border-top: 1.5px solid var(--ink);
+    pointer-events: none;
+}
+.flow-node[data-step="2"]::after {
+    border-top-style: dashed; /* queue → worker is asynchronous */
+}
+/* trace rail spans API..WORKER; API and WORKER drop a line into it */
+.flow-trace {
+    grid-column: 2 / 5;
+    grid-row: 3;
+}
+.flow-node[data-step="1"]::before,
+.flow-node[data-step="3"]::before {
+    content: "";
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    height: 26px;
+    border-left: 1.5px dashed var(--ink);
+    pointer-events: none;
+}
+/* the request: travels under the boxes, visible on the wires */
+.flow-dot {
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 0;
+    width: 10px;
+    height: 10px;
+    margin: -5px 0 0 -5px;
+    background: var(--ink);
+    pointer-events: none;
+}
+.flow-side {
+    display: grid;
+    gap: 12px;
+}
+.flow-caption {
+    min-height: 4.4em;
+    margin: 0;
+    font: 400 16px/1.45 var(--sans);
+}
+.flow-caption b {
+    display: block;
+    margin-bottom: 4px;
+    font: 400 12px/1 var(--mono);
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+}
+.flow-note {
+    font: 400 11px/1.4 var(--mono);
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+}
+.btn-sm {
+    justify-self: start;
+    min-height: 44px;
+    padding: 0 14px;
+    font-size: 12px;
+}
+.flow-run[aria-disabled="true"] {
+    opacity: 0.5;
+    cursor: default;
 }
 
 /* === Plain (About) === */
@@ -542,9 +659,10 @@ button:focus-visible {
     }
     /* Text runs full width on phones: keep the scanlines beside the portrait, above the copy */
     .glitch {
-        top: 120px;
+        top: 0;
         bottom: auto;
-        height: 200px;
+        right: -20px;
+        height: 160px;
         width: 42vw;
         opacity: 0.5;
     }
@@ -596,6 +714,46 @@ button:focus-visible {
         margin-top: 88px;
     }
 }
+@media (max-width: 760px) {
+    .flow {
+        grid-template-columns: 1fr;
+    }
+    .flow-map {
+        grid-template-columns: minmax(0, 1fr) 26px 44px;
+        grid-template-rows: none;
+        row-gap: 18px;
+        column-gap: 0;
+    }
+    .flow-node[data-step] {
+        grid-column: 1;
+    }
+    .flow-trace {
+        grid-column: 3;
+        grid-row: 2 / 5;
+        padding: 12px 0;
+        writing-mode: vertical-rl;
+    }
+    .flow-node[data-step]:not([data-step="4"])::after {
+        top: 100%;
+        left: 50%;
+        width: 0;
+        height: 18px;
+        border-top: 0;
+        border-left: 1.5px solid var(--ink);
+    }
+    .flow-node[data-step="2"]::after {
+        border-left-style: dashed;
+    }
+    .flow-node[data-step="1"]::before,
+    .flow-node[data-step="3"]::before {
+        top: 50%;
+        left: 100%;
+        width: 26px;
+        height: 0;
+        border-left: 0;
+        border-top: 1.5px dashed var(--ink);
+    }
+}
 /* Short phones (e.g. 360x640): shrink the portrait so the CTAs stay on the first screen */
 @media (max-width: 760px) and (max-height: 700px) {
     .section-hero {
@@ -612,8 +770,7 @@ button:focus-visible {
         width: 88px;
     }
     .glitch {
-        top: 96px;
-        height: 110px;
+        height: 88px;
     }
     .hero-tagline {
         margin-top: 18px;
@@ -666,7 +823,8 @@ button:focus-visible {
 .anim .hero-summary,
 .anim .hero-cta,
 .anim .hero-img-wrapper,
-.anim .hero-ctas {
+.anim .hero-ctas,
+.anim .flow {
     opacity: 0;
     transform: translateY(16px);
     transition:
@@ -681,6 +839,7 @@ button:focus-visible {
 .anim .hero-cta { --d: 0.5s; }
 .anim .cover-top .tag,
 .anim .hero-ctas { --d: 0.6s; transform: none; }
+.anim .flow { --d: 0.7s; }
 /* Below the fold: movement only, never opacity */
 .anim .timeline-row {
     transform: translateX(-16px);
@@ -706,6 +865,7 @@ button:focus-visible {
 .anim .in .hero-cta,
 .anim .in .hero-img-wrapper,
 .anim .in .hero-ctas,
+.anim .in .flow,
 .anim .in .pix i {
     opacity: 1;
     transform: none;

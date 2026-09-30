@@ -3,17 +3,20 @@
 <section class="section section-hero" id="top">
     <div class="hair hair-t" aria-hidden="true"></div>
     <div class="hair hair-b" aria-hidden="true"></div>
-    <div class="glitch" aria-hidden="true">
-        <i style="width:60%;height:18%"></i>
-        <i style="width:100%;height:16%"></i>
-        <i style="width:44%;height:14%"></i>
-        <i style="width:78%;height:20%"></i>
-        <i style="width:34%;height:12%"></i>
-    </div>
     <div class="cover-top">
         <span class="tag">{{ .Location }}</span>
+        <nav class="hero-ctas" aria-label="Elsewhere">
+            {{ range .CTAs }}{{ if not .Primary }}<a href="{{ .URL }}">{{ .Label }}</a>{{ end }}{{ end }}
+        </nav>
     </div>
     <div class="cover-body">
+        <div class="glitch" aria-hidden="true">
+            <i style="width:60%;height:18%"></i>
+            <i style="width:100%;height:16%"></i>
+            <i style="width:44%;height:14%"></i>
+            <i style="width:78%;height:20%"></i>
+            <i style="width:34%;height:12%"></i>
+        </div>
         <div class="cover-text">
             <p class="kick">{{ .Role }}</p>
             <h1 class="hero-name">{{ .Name }}</h1>
@@ -28,9 +31,7 @@
             {{ if .ImageDark }}<img class="hero-img hero-img-dark" src="{{ .ImageDark }}" alt="">{{ end }}
         </div>
     </div>
-    <nav class="hero-ctas" aria-label="Elsewhere">
-        {{ range .CTAs }}{{ if not .Primary }}<a href="{{ .URL }}">{{ .Label }}</a>{{ end }}{{ end }}
-    </nav>
+    {{ template "flow" }}
 </section>
 {{ end }}
 {{ end }}

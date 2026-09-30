@@ -1,0 +1,24 @@
+{{ define "flow" }}
+<div class="flow" data-flow>
+    <div class="flow-map" role="group" aria-label="How a request moves through the systems I build">
+        <button class="flow-node" type="button" data-step="0" data-k="Request" data-t="0 ms"
+            data-note="Every request is a promise with a deadline. I design for the p99, not the demo.">Request</button>
+        <button class="flow-node" type="button" data-step="1" data-k="API" data-t="+12 ms"
+            data-note="Thin edges: validate, authorize, fan out over gRPC. Business rules live in domain services, not the gateway.">API</button>
+        <button class="flow-node" type="button" data-step="2" data-k="Queue" data-t="+3 ms · async"
+            data-note="If it doesn't have to happen now, it goes on a queue. At-least-once delivery means every consumer is idempotent.">Queue</button>
+        <button class="flow-node" type="button" data-step="3" data-k="Worker" data-t="+41 ms"
+            data-note="Side effects (emails, stock, notifications) run in workers, each behind an explicit guard and safe to retry.">Worker</button>
+        <button class="flow-node" type="button" data-step="4" data-k="Database" data-t="+8 ms"
+            data-note="One transaction for the write, events for everything else.">Database</button>
+        <button class="flow-node flow-trace" type="button" data-k="Trace / Observe"
+            data-note="If I can't see it in a trace, it didn't happen. Every hop carries the same trace id.">Trace / Observe</button>
+        <span class="flow-dot" aria-hidden="true"></span>
+    </div>
+    <div class="flow-side">
+        <p class="flow-caption" aria-live="polite"><b>Follow a request</b>Hover or tap a node to see how I think about it.</p>
+        <button class="btn btn-sm flow-run" type="button">Follow a request<svg viewBox="0 0 12 12" aria-hidden="true"><path d="M3 9 9 3M4 3h5v5" fill="none" stroke="currentColor" stroke-width="1.5"/></svg></button>
+        <span class="flow-note">Demo — illustrative timings, not live telemetry</span>
+    </div>
+</div>
+{{ end }}

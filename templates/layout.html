@@ -108,6 +108,84 @@
         })();
         </script>
         <script>
+        // Follow a request: hover/focus/tap explains a node; the button walks one
+        // demo run (illustrative timings, not telemetry). The request dot drifts
+        // along the main line only while the strip is on screen, never with
+        // reduced motion.
+        (function() {
+            var flow = document.querySelector('[data-flow]');
+            if (!flow) return;
+            var map = flow.querySelector('.flow-map');
+            var cap = flow.querySelector('.flow-caption');
+            var dot = flow.querySelector('.flow-dot');
+            var run = flow.querySelector('.flow-run');
+            var trace = flow.querySelector('.flow-trace');
+            var steps = [].slice.call(flow.querySelectorAll('.flow-node[data-step]'));
+            var still = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+            var running = false, ambient = null;
+            var show = function(node, extra) {
+                var b = document.createElement('b');
+                b.textContent = node.getAttribute('data-k') + (extra ? ' · ' + extra : '');
+                cap.replaceChildren(b, document.createTextNode(node.getAttribute('data-note')));
+            };
+            var at = function(node) {
+                var m = map.getBoundingClientRect(), r = node.getBoundingClientRect();
+                return 'translate(' + (r.left - m.left + r.width / 2) + 'px,' + (r.top - m.top + r.height / 2) + 'px)';
+            };
+            var drift = function() {
+                if (ambient) ambient.cancel();
+                dot.style.transform = at(steps[0]);
+                if (still) return;
+                ambient = dot.animate(steps.map(function(s, i) {
+                    return { transform: at(s), offset: i / (steps.length - 1) };
+                }), { duration: 8000, iterations: Infinity });
+                ambient.pause();
+            };
+            flow.querySelectorAll('.flow-node').forEach(function(n) {
+                ['mouseenter', 'focus', 'click'].forEach(function(ev) {
+                    n.addEventListener(ev, function() { if (!running) show(n); });
+                });
+            });
+            run.addEventListener('click', function() {
+                if (running) return;
+                running = true;
+                run.setAttribute('aria-disabled', 'true');
+                if (ambient) ambient.pause();
+                var i = 0;
+                (function hop() {
+                    steps.forEach(function(s) { s.classList.remove('is-on'); });
+                    if (i === steps.length) {
+                        trace.classList.add('is-on');
+                        show(trace, 'total 64 ms (demo)');
+                        setTimeout(function() {
+                            trace.classList.remove('is-on');
+                            running = false;
+                            run.removeAttribute('aria-disabled');
+                            drift();
+                            if (visible && ambient) ambient.play();
+                        }, 1600);
+                        return;
+                    }
+                    var n = steps[i], to = at(n);
+                    n.classList.add('is-on');
+                    trace.classList.toggle('is-on', i === 1 || i === 3);
+                    show(n, n.getAttribute('data-t') + ' (demo)');
+                    if (!still) dot.animate([{ transform: getComputedStyle(dot).transform }, { transform: to }], { duration: 450, easing: 'cubic-bezier(0.65, 0, 0.35, 1)' });
+                    dot.style.transform = to;
+                    i++;
+                    setTimeout(hop, 1100);
+                })();
+            });
+            var visible = false;
+            new IntersectionObserver(function(entries) {
+                visible = entries[0].isIntersecting;
+                if (ambient && !running) visible ? ambient.play() : ambient.pause();
+            }).observe(flow);
+            drift();
+            window.addEventListener('resize', function() { if (!running) { drift(); if (visible && ambient) ambient.play(); } });
+        })();
+        </script>
+        <script>
         // Theme toggle — the new theme grows as a circle from the click point
         // (View Transitions API); unsupported browsers or reduced motion switch instantly.
         document.addEventListener('DOMContentLoaded', function() {
