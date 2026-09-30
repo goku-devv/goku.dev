@@ -10,8 +10,12 @@ import (
 	"github.com/gomarkdown/markdown/parser"
 )
 
+// lastUpdated is injected at build time: -ldflags "-X main.lastUpdated=YYYY-MM-DD" (see Makefile).
+var lastUpdated string
+
 type PageData struct {
 	Sections []Section
+	Updated  string
 }
 
 func markdownToHTML(md []byte) []byte {
@@ -46,7 +50,7 @@ func homeHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := tmpl.ExecuteTemplate(w, "layout.html", PageData{Sections: sections}); err != nil {
+	if err := tmpl.ExecuteTemplate(w, "layout.html", PageData{Sections: sections, Updated: lastUpdated}); err != nil {
 		http.Error(w, "Error rendering template", http.StatusInternalServerError)
 		log.Printf("ExecuteTemplate: %v", err)
 		return

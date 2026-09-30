@@ -1,13 +1,13 @@
 # goku.dev
 
-Personal portfolio site. Multi-section markdown-driven layout served by a small Go HTTP server. Light/dark theme, Geist Mono typography, no build pipeline, no JS framework.
+Personal portfolio site. Multi-section markdown-driven layout served by a small Go HTTP server. Light/dark theme, "Cobalt Grid" style (two inks — cobalt on cream — over a graph-paper grid; Newsreader + Hanken Grotesk + DM Mono), no build pipeline, no JS framework.
 
 ## Stack
 
 - **Go 1.24** — `net/html/template`, `net/http`
 - **[gomarkdown/markdown](https://github.com/gomarkdown/markdown)** — markdown rendering
 - **[gopkg.in/yaml.v3](https://gopkg.in/yaml.v3)** — frontmatter parsing
-- Vanilla CSS + ~50 lines of inline JS (theme toggle, gallery slider, social-icon enhance)
+- Vanilla CSS + a few lines of inline JS (theme toggle + favicon swap)
 
 ## Project layout
 
@@ -22,9 +22,7 @@ goku.dev/
 │   ├── 02-about.md         plain markdown
 │   ├── 03-experience.md    layout: timeline
 │   ├── 04-education.md     layout: timeline
-│   ├── 05-skills.md        layout: grouped
-│   ├── 08-gallery.md       plain markdown + raw HTML slider
-│   └── 09-contact.md       plain markdown
+│   └── 05-skills.md        layout: grouped
 ├── templates/
 │   ├── layout.html         outer shell, theme toggle, dispatcher
 │   ├── section_hero.html
@@ -34,7 +32,7 @@ goku.dev/
 ├── static/
 │   ├── style.css
 │   ├── favicon.png
-│   └── photos/             profile + gallery images
+│   └── photos/             profile images
 ├── scripts/
 │   └── deploy.sh           gitignored — see Deploy
 ├── docs/superpowers/       design spec + implementation plan
@@ -90,16 +88,16 @@ Visit http://localhost:8080. Templates and content are reloaded per request, so 
 ```bash
 make build         # local binary -> ./profilepage
 make build-linux   # cross-compile -> ./profilepage (linux/amd64, static, stripped)
-make run           # go run .
+make run           # go run . (with the footer "last updated" date)
 make test          # go test ./...
 make clean         # remove binaries
 ```
 
 ## Theme
 
-Light/dark theme is driven by a `data-theme` attribute on `<html>`. An inline `<script>` in `<head>` reads `localStorage.theme` (falling back to `prefers-color-scheme`) and sets it before paint, preventing FOUC. The toggle button in the top-right flips and persists.
+Light/dark theme is driven by a `data-theme` attribute on `<html>`. An inline `<script>` in `<head>` reads `localStorage.theme` (falling back to `prefers-color-scheme`) and sets it before paint, preventing FOUC. The square toggle in the cover's top row flips and persists, revealing the new theme as a growing circle (View Transitions API; instant where unsupported or with reduced motion).
 
-CSS uses six variables (`--bg`, `--card-bg`, `--border`, `--text-primary`, `--text-secondary`, `--link-border`) overridden under `[data-theme="dark"]`.
+CSS uses five theme variables (`--bg`, `--ink`, `--ink-soft`, `--grid`, `--ink-faint`) overridden under `[data-theme="dark"]`, which inverts the two inks (cream on cobalt).
 
 ## Author
 

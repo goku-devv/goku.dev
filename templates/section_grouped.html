@@ -5,8 +5,9 @@
         {{ range .Groups }}
         <div class="grouped-row">
             <div class="grouped-name">{{ .Name }}</div>
+            <div class="pix" aria-hidden="true">{{ range .Items }}<i></i>{{ end }}</div>
             <div class="grouped-items">
-                {{ range $i, $item := .Items }}{{ if $i }} · {{ end }}{{ $item }}{{ end }}
+                {{ range $i, $item := .Items }}{{ if $i }}&nbsp;· {{ end }}<span>{{ $item }}</span>{{ end }}
             </div>
         </div>
         {{ end }}

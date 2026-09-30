@@ -17,5 +17,5 @@ groups:
   - name: Observability
     items: [OpenTelemetry, Datadog, NewRelic, Prometheus, ELK Stack]
   - name: AI / LLM
-    items: [OpenClaw, Hermes, Gemini, OpenAI, Ollama, MCP]
+    items: [Claude Code, Codex CLI, MCP Servers, Agent Workflows, Claude, OpenAI, Ollama, OpenClaw, Hermes]
 ---
