@@ -6,6 +6,8 @@ entries:
     dates: 2020 – Present
     role: Senior Software Engineer
     url: https://autonomous.ai
+    bullets:
+      - Built and own much of the commerce backend — the Go service framework, the storefront and admin APIs, checkout and payments, and the MCP gateway for AI agents.
   - company: Bestarion Software Company Ltd
     dates: 2020
     role: Senior Software Engineer
