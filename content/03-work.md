@@ -1,6 +1,6 @@
 ## Selected Work
 
-### Checkout that never charges twice
+### Checkout that fails over without charging twice
 
 *Payments · Storefront API · 2022–2026*
 
@@ -19,9 +19,13 @@
 **Outcome** 12 payment methods behind one four-method interface; the failover rule is covered by ~650 lines of tests.
 
 ```text
-browser → storefront API → lock → validate → order (pending) → payment layer → processor A
-                                                    └ only if certainly not authorised → processor B
-          order event → async workers (email · stock · notifications)
+browser → storefront API
+  → lock → validate → order (pending)
+  → payment layer → processor A
+      +- only if certainly not authorised
+         → processor B
+order event → async workers
+  (email · stock · notifications)
 ```
 
 ### One chassis for ~40 Go services
@@ -43,11 +47,12 @@ browser → storefront API → lock → validate → order (pending) → payment
 
 ```text
 service = chassis + domain logic
-┌──────────────── chassis ────────────────┐
-│ lifecycle · drivers · health · shutdown │
-│ gRPC: recover → validate → trace        │
-└─────────────────────────────────────────┘
-        ▲ contracts: ~95 services · ~1,100 RPCs (protobuf)
++--------------- chassis ---------------+
+| lifecycle · drivers · health          |
+| graceful shutdown                     |
+| gRPC: recover → validate → trace      |
++---------------------------------------+
+  ^ contracts: ~95 services · ~1,100 RPCs
 ```
 
 ### Letting AI agents run commerce operations, safely
@@ -61,16 +66,48 @@ service = chassis + domain logic
 **Decisions**
 
 - **Reuse business logic, don't bypass it.** Tools go through the existing use cases and gRPC services.
-- **Three permission tiers** (full, read-only, customer support), with a deny-by-default allowlist for support bots.
+- **Permission tiers per key**, with a deny-by-default allowlist for support bots.
 - **Preview, then commit.** An order is created from a previewed cart. There are no standalone refund tools; refunds happen only through a server-validated cancellation.
 - **Warehouse queries** are dry-run first, SELECT-only (fail-closed), and capped on bytes and rows.
 
 **Outcome** ~114 typed tools across orders, shipments, payments, catalog, content, helpdesk and analytics, with 114 unit tests.
 
 ```text
-agent / support bot ─MCP→ gateway [auth → tier → allowlist → redacted log]
-                            ├ orders · shipments · payments   (preview → commit)
-                            ├ catalog · content · helpdesk
-                            └ warehouse (dry-run · SELECT-only · capped)
-                                 ↓ same use cases & services as the admin API
+agent / support bot → MCP → gateway
+  auth → tier → allowlist → redacted log
+  +- orders · shipments · payments
+  |    preview → commit
+  +- catalog · content · helpdesk
+  +- warehouse: dry-run, SELECT-only, capped
+  same use cases & services as admin API
+```
+
+### Agents as teammates
+
+*AI operations · Claude Code · 2026*
+
+**Problem** Seven teams (growth, customer support, operations, bulk sales, a product line, finance, HR) each had an AI assistant on a third-party agent runtime, and engineers were handing real work to a coding agent across ~50 repositories. Both needed clear rules, the right tools, and a safe way to change them.
+
+**Role** I run the assistant fleet's operations (hosting, upgrades, config management, model routing, runbooks) and I'm the main author of two of the seven assistants: internal analytics and customer-facing support. For engineering, I wrote the Claude Code setup: an architecture map, three workflow skills and a guard hook. I didn't write the agent runtime, and the other five assistants were started by their teams.
+
+**Decisions**
+
+- **Behaviour lives in git.** Each assistant's persona, rules, skills and approved SQL are a versioned repo; live config changes are diffed against the running copy before they land. *Trade-off: the runtime rewrites its own config, so there are two sources to reconcile.*
+- **Tools come through the MCP gateway, wired per bot.** Each assistant gets only the servers its job needs. The customer assistant adds a per-tool allowlist and is gated like a support rep: order number plus email to look anything up, a one-time code and explicit confirmation for changes, and no refund tools in chat.
+- **Measure before answering.** The analytics assistant has one canonical metric-definitions file, a trusted-table check and a regression eval set; every wrong answer becomes a documented anti-pattern.
+- **Hard rules in a hook, judgment in skills.** A guard checks every shell command the coding agent runs (7 git and formatting rules; it denies and says what to do instead). Staging deploys, production releases and contract changes are skills, and "deployed" means the GitOps commit names your tag, not a green pipeline.
+
+**Outcome** Seven assistants serving six internal teams plus shoppers, on one host, operated from one inventory and a ~540-line runbook. The first state-migrating upgrade took ~12 s of downtime plus ~50 s of migration, with a full rollback archive taken first. The analytics assistant's eval went from 2/10 to 7/10 in one evening of fixes. Coding-agent sessions start with the team's rules, 3 skills and a 7-rule guard.
+
+```text
+team chats · storefront widget
+  → 7 assistants, one container each
+      persona · rules · skills · SQL (git)
+  → MCP gateway: tools wired per bot
+  → in-house model relay
+
+engineer → Claude Code
+  reads the map · loads skills
+  every command → guard (7 rules)
+  production tag → human confirms
 ```

@@ -421,7 +421,7 @@ button:focus-visible {
     gap: 12px;
 }
 .flow-caption {
-    min-height: 4.4em;
+    min-height: 5.4em;
     margin: 0;
     font: 400 16px/1.45 var(--sans);
 }
@@ -735,6 +735,9 @@ button:focus-visible {
     }
 }
 @media (max-width: 1000px) {
+    .flow {
+        grid-template-columns: 1fr;
+    }
     .grouped {
         grid-template-columns: repeat(2, minmax(0, 1fr));
     }
@@ -849,6 +852,13 @@ button:focus-visible {
         height: 0;
         border-left: 0;
         border-top: 1.5px dashed var(--ink);
+    }
+}
+/* Figures are drawn to fit ~44 columns; shrink the type so they fit a phone */
+@media (max-width: 760px) {
+    .section-work pre {
+        padding: 14px 14px 16px;
+        font-size: 11.5px;
     }
 }
 /* Short phones (e.g. 360x640): shrink the portrait so the CTAs stay on the first screen */
