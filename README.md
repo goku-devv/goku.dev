@@ -7,7 +7,7 @@ Personal portfolio site. Multi-section markdown-driven layout served by a small 
 - **Go 1.24** — `net/html/template`, `net/http`
 - **[gomarkdown/markdown](https://github.com/gomarkdown/markdown)** — markdown rendering
 - **[gopkg.in/yaml.v3](https://gopkg.in/yaml.v3)** — frontmatter parsing
-- Vanilla CSS + a little inline JS (theme toggle, entrance motion, the "Follow a request" strip)
+- Vanilla CSS + a few lines of inline JS (theme toggle + favicon swap)
 
 ## Project layout
 
