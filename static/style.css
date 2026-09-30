@@ -472,6 +472,103 @@ button:focus-visible {
     margin-bottom: 0;
 }
 
+.section-plain code {
+    font: 400 0.88em/1 var(--mono);
+}
+
+/* === Selected Work — one "sheet" per case study, written in markdown:
+   ### title, *kicker*, **Label** paragraphs, a decisions list with
+   *trade-off* notes, and a ```text architecture sketch. === */
+.section-work {
+    counter-reset: case;
+}
+.section-work h3 {
+    counter-increment: case;
+    display: flex;
+    align-items: baseline;
+    gap: 16px;
+    margin: 88px 0 0;
+    padding-top: 24px;
+    border-top: 1.5px solid var(--ink);
+    font: 400 clamp(30px, 3.6vw, 44px)/1.05 var(--serif);
+    letter-spacing: -0.01em;
+}
+.section-work h2 + h3 {
+    margin-top: 0;
+    padding-top: 0;
+    border-top: 0;
+}
+.section-work h3::before {
+    content: counter(case, decimal-leading-zero);
+    content: counter(case, decimal-leading-zero) / "";
+    flex: none;
+    font: 400 13px/1 var(--mono);
+    letter-spacing: 0.05em;
+}
+.section-work h3 + p {
+    margin: 14px 0 32px;
+    font: 400 13px/1.4 var(--mono);
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+}
+.section-work em {
+    font-style: normal;
+}
+.section-work p,
+.section-work li {
+    max-width: 44em;
+    font-size: clamp(16px, 1.4vw, 18px);
+}
+.section-work p > strong:first-child {
+    display: block;
+    margin-bottom: 6px;
+    font: 600 12px/1.3 var(--sans);
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+}
+.section-work ul {
+    list-style: none;
+    margin: 0 0 1.2em;
+    padding: 0;
+}
+.section-work li {
+    position: relative;
+    margin: 0 0 14px;
+    padding-left: 26px;
+}
+.section-work li::before {
+    content: "+";
+    position: absolute;
+    left: 0;
+    font-family: var(--mono);
+}
+.section-work li em {
+    display: block;
+    margin-top: 6px;
+    font: 400 13px/1.5 var(--mono);
+    letter-spacing: 0.02em;
+}
+/* The architecture sketch: a figure drawn in ink on the grid */
+.section-work pre {
+    max-width: none;
+    margin: 28px 0 0;
+    padding: 16px 20px 18px;
+    overflow-x: auto;
+    border: 1.5px solid var(--ink);
+    font: 400 13px/1.55 var(--mono);
+}
+.section-work pre::before {
+    content: "Fig. " counter(case, decimal-leading-zero) " · simplified";
+    display: block;
+    margin-bottom: 12px;
+    font: 600 11px/1.3 var(--sans);
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+}
+.section-work pre code {
+    font: inherit;
+}
+
 /* === Timeline (Experience, Education) — ledger rows:
    index | name | role | dates === */
 .timeline {

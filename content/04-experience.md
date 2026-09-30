@@ -2,11 +2,11 @@
 title: Experience
 layout: timeline
 entries:
-  - company: Autonomous Inc.
+  - company: Autonomous Inc
     dates: 2020 – Present
     role: Senior Software Engineer
     url: https://autonomous.ai
-  - company: Bestarion Software Company Ltd.
+  - company: Bestarion Software Company Ltd
     dates: 2020
     role: Senior Software Engineer
   - company: WeVenture Pte Ltd

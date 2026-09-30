@@ -9,7 +9,7 @@ tagline: I build the systems behind the experience.
 summary: Go backends, distributed systems, and tools for AI agents.
 ctas:
   - label: Explore my work
-    url: "#experience"
+    url: "#work"
     primary: true
   - label: Say hello
     url: mailto:hi.im@goku.dev
