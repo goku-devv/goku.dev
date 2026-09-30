@@ -1,5 +1,5 @@
 {{ define "section_timeline" }}
-<section class="section section-timeline section-{{ .Slug }}">
+<section id="{{ .Slug }}" class="section section-timeline section-{{ .Slug }}">
     <h2 class="section-title">{{ .Title }}</h2>
     <div class="timeline">
         {{ range .Entries }}

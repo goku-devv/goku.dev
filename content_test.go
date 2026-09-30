@@ -51,9 +51,11 @@ role: Software Engineer
 location: Ho Chi Minh, Viet Nam
 image: /static/photos/goku.png
 tagline: Backend dev.
+summary: Go backends.
 ctas:
   - label: Email
     url: mailto:test@example.com
+    primary: true
   - label: GitHub
     url: https://github.com/x
 ---
@@ -76,8 +78,14 @@ ignored body
 	if h.Image != "/static/photos/goku.png" || h.Tagline != "Backend dev." {
 		t.Errorf("hero image/tagline: %+v", h)
 	}
+	if h.Summary != "Go backends." {
+		t.Errorf("hero summary: %q", h.Summary)
+	}
 	if len(h.CTAs) != 2 || h.CTAs[0].Label != "Email" || h.CTAs[1].URL != "https://github.com/x" {
 		t.Errorf("hero CTAs: %+v", h.CTAs)
+	}
+	if !h.CTAs[0].Primary || h.CTAs[1].Primary {
+		t.Errorf("hero CTA primary flags: %+v", h.CTAs)
 	}
 }
 
@@ -87,7 +95,7 @@ func TestLoadSections_Timeline(t *testing.T) {
 title: Experience
 layout: timeline
 entries:
-  - company: Autonomous Inc.
+  - company: Autonomous Inc
     dates: Dec 2020 - Present
     role: Senior Software Engineer
     url: https://autonomous.ai
@@ -115,7 +123,7 @@ entries:
 	if len(s.Entries) != 2 {
 		t.Fatalf("want 2 entries, got %d", len(s.Entries))
 	}
-	if s.Entries[0].Company != "Autonomous Inc." || s.Entries[0].URL != "https://autonomous.ai" {
+	if s.Entries[0].Company != "Autonomous Inc" || s.Entries[0].URL != "https://autonomous.ai" {
 		t.Errorf("entry[0]: %+v", s.Entries[0])
 	}
 	if len(s.Entries[0].Bullets) != 2 || s.Entries[0].Bullets[1] != "Did another thing." {

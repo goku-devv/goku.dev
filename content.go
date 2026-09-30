@@ -31,12 +31,14 @@ type HeroData struct {
 	Image     string
 	ImageDark string
 	Tagline   template.HTML
+	Summary   string
 	CTAs      []CTA
 }
 
 type CTA struct {
-	Label string
-	URL   string
+	Label   string
+	URL     string
+	Primary bool // rendered as a button under the tagline; the rest are small links
 }
 
 type TimelineEntry struct {
@@ -61,6 +63,7 @@ type frontmatter struct {
 	Image     string          `yaml:"image"`
 	ImageDark string          `yaml:"image_dark"`
 	Tagline   string          `yaml:"tagline"`
+	Summary   string          `yaml:"summary"`
 	CTAs      []CTA           `yaml:"ctas"`
 	Entries   []TimelineEntry `yaml:"entries"`
 	Groups    []SkillGroup    `yaml:"groups"`
@@ -131,6 +134,7 @@ func parseSection(filename string, raw []byte) (Section, error) {
 			Image:     meta.Image,
 			ImageDark: meta.ImageDark,
 			Tagline:   renderInline(meta.Tagline),
+			Summary:   meta.Summary,
 			CTAs:      meta.CTAs,
 		}
 	case "timeline":

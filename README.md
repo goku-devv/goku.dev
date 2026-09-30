@@ -45,12 +45,12 @@ goku.dev/
 
 Every file in `content/` becomes one `<section>` on the page. Files without YAML frontmatter render as plain markdown. Files with frontmatter dispatch on `layout:`:
 
-| layout     | Used for                | Frontmatter shape                                                      |
-| ---------- | ----------------------- | ---------------------------------------------------------------------- |
-| `hero`     | Top of page             | `name`, `role`, `location`, `image`, `tagline`, `ctas: [{label, url}]` |
-| `timeline` | Experience, Education   | `title`, `entries: [{company, dates, role, url, bullets}]`             |
-| `grouped`  | Skills                  | `title`, `groups: [{name, items}]`                                     |
-| _omitted_  | About, Gallery, Contact | none — body rendered as markdown                                       |
+| layout     | Used for              | Frontmatter shape                                                                    |
+| ---------- | --------------------- | ------------------------------------------------------------------------------------ |
+| `hero`     | Top of page           | `name`, `role`, `location`, `image`, `image_dark`, `tagline`, `summary`, `ctas: [{label, url, primary}]` |
+| `timeline` | Experience, Education | `title`, `entries: [{company, dates, role, url, bullets}]`                           |
+| `grouped`  | Skills                | `title`, `groups: [{name, items}]`                                                   |
+| _omitted_  | About                 | none — body rendered as markdown                                                     |
 
 Filenames use a numeric `NN-` prefix to control render order. Gaps are allowed — drop a file to skip a section.
 
@@ -61,7 +61,7 @@ Example `03-experience.md`:
 title: Experience
 layout: timeline
 entries:
-  - company: Autonomous Inc.
+  - company: Autonomous Inc
     dates: Dec 2020 – Present
     role: Senior Software Engineer
     url: https://autonomous.ai

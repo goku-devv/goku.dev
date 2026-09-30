@@ -1,10 +1,10 @@
 {{ define "section_grouped" }}
-<section class="section section-grouped section-{{ .Slug }}">
+<section id="{{ .Slug }}" class="section section-grouped section-{{ .Slug }}">
     <h2 class="section-title">{{ .Title }}</h2>
     <div class="grouped">
         {{ range .Groups }}
         <div class="grouped-row">
-            <div class="grouped-name">{{ .Name }}</div>
+            <h3 class="grouped-name">{{ .Name }}</h3>
             <div class="pix" aria-hidden="true">{{ range .Items }}<i></i>{{ end }}</div>
             <div class="grouped-items">
                 {{ range $i, $item := .Items }}{{ if $i }}&nbsp;· {{ end }}<span>{{ $item }}</span>{{ end }}

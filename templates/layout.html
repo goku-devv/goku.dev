@@ -5,16 +5,16 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <link id="favicon" rel="icon" href="/static/favicon.png"
             type="image/png">
-        <title>goku — Software Engineer</title>
+        <title>goku — Senior Backend Engineer</title>
         <meta name="description"
-            content="Senior Backend Engineer at Autonomous. 10 years building Go microservices — distributed tracing, real-time observability, multi-chain payments.">
+            content="I build the systems behind the experience — Go backends, distributed systems, and tools for AI agents. Senior Backend Engineer at Autonomous.">
 
         <!-- Open Graph (Facebook, LinkedIn, Slack, iMessage) -->
         <meta property="og:type" content="website">
         <meta property="og:url" content="https://goku.dev/">
-        <meta property="og:title" content="goku — Software Engineer">
+        <meta property="og:title" content="goku — Senior Backend Engineer">
         <meta property="og:description"
-            content="Senior Backend Engineer at Autonomous. 10 years building Go microservices — distributed tracing, real-time observability, multi-chain payments.">
+            content="I build the systems behind the experience — Go backends, distributed systems, and tools for AI agents. Senior Backend Engineer at Autonomous.">
         <meta property="og:image"
             content="https://goku.dev/static/photos/goku.png">
 
@@ -22,16 +22,17 @@
         <meta name="twitter:card" content="summary">
         <meta name="twitter:site" content="@goku_dev">
         <meta name="twitter:creator" content="@goku_dev">
-        <meta name="twitter:title" content="goku — Software Engineer">
+        <meta name="twitter:title" content="goku — Senior Backend Engineer">
         <meta name="twitter:description"
-            content="Senior Backend Engineer at Autonomous. 10 years building Go microservices — distributed tracing, real-time observability, multi-chain payments.">
+            content="I build the systems behind the experience — Go backends, distributed systems, and tools for AI agents. Senior Backend Engineer at Autonomous.">
         <meta name="twitter:image"
             content="https://goku.dev/static/photos/goku.png">
-        <link rel="stylesheet" href="/static/style.css">
+        <!-- ?v= busts browser caches when a new date ships (day granularity) -->
+        <link rel="stylesheet" href="/static/style.css?v={{ .Updated }}">
         <link rel="preconnect" href="https://fonts.googleapis.com">
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
         <link
-            href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;1,6..72,400&family=Hanken+Grotesk:wght@400;600&family=DM+Mono:wght@400&display=swap"
+            href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,400&family=Hanken+Grotesk:wght@400;600&family=DM+Mono:wght@400&display=swap"
             rel="stylesheet">
         <script>
         (function() {
@@ -82,8 +83,9 @@
             {{ with .Updated }}<span class="lbl">Last updated · <time datetime="{{ . }}">{{ . }}</time></span>{{ end }}
         </footer>
         <script>
-        // Entrance motion: each section plays once when it scrolls into view
-        // (the cover plays on load). Stagger indexes feed the CSS delays.
+        // Entrance motion: each section plays once as it approaches the viewport
+        // (10% early, so it is settling by the time it is read; the cover plays
+        // on load). Stagger indexes feed the CSS delays.
         (function() {
             if (!document.documentElement.classList.contains('anim')) return;
             var index = function(sel, prop) {
@@ -97,11 +99,11 @@
             index('.pix i', '--i');
             var io = new IntersectionObserver(function(entries) {
                 entries.forEach(function(e) {
-                    if (!e.isIntersecting) return;
+                    if (!e.isIntersecting && !e.target.classList.contains('section-hero')) return;
                     e.target.classList.add('in');
                     io.unobserve(e.target);
                 });
-            }, { rootMargin: '0px 0px -12% 0px' });
+            }, { rootMargin: '0px 0px 10% 0px' });
             document.querySelectorAll('.section').forEach(function(s) { io.observe(s); });
         })();
         </script>

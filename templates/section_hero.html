@@ -1,6 +1,6 @@
 {{ define "section_hero" }}
 {{ with .Hero }}
-<section class="section section-hero">
+<section class="section section-hero" id="top">
     <div class="hair hair-t" aria-hidden="true"></div>
     <div class="hair hair-b" aria-hidden="true"></div>
     <div class="glitch" aria-hidden="true">
@@ -18,17 +18,19 @@
             <p class="kick">{{ .Role }}</p>
             <h1 class="hero-name">{{ .Name }}</h1>
             {{ if .Tagline }}<p class="hero-tagline">{{ .Tagline }}</p>{{ end }}
+            {{ if .Summary }}<p class="hero-summary">{{ .Summary }}</p>{{ end }}
+            <div class="hero-cta">
+                {{ range .CTAs }}{{ if .Primary }}<a class="btn" href="{{ .URL }}">{{ .Label }}<svg viewBox="0 0 12 12" aria-hidden="true"><path d="M3 9 9 3M4 3h5v5" fill="none" stroke="currentColor" stroke-width="1.5"/></svg></a>{{ end }}{{ end }}
+            </div>
         </div>
         <div class="hero-img-wrapper{{ if .ImageDark }} hero-img-wrapper--themed{{ end }}">
             <img class="hero-img hero-img-light" src="{{ .Image }}" alt="{{ .Name }}">
             {{ if .ImageDark }}<img class="hero-img hero-img-dark" src="{{ .ImageDark }}" alt="">{{ end }}
         </div>
     </div>
-    {{ if .CTAs }}
-    <nav class="hero-ctas" aria-label="Contact">
-        {{ range .CTAs }}<a href="{{ .URL }}">{{ .Label }}</a>{{ end }}
+    <nav class="hero-ctas" aria-label="Elsewhere">
+        {{ range .CTAs }}{{ if not .Primary }}<a href="{{ .URL }}">{{ .Label }}</a>{{ end }}{{ end }}
     </nav>
-    {{ end }}
 </section>
 {{ end }}
 {{ end }}

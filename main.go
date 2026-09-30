@@ -19,7 +19,7 @@ type PageData struct {
 }
 
 func markdownToHTML(md []byte) []byte {
-	extensions := parser.CommonExtensions | parser.AutoHeadingIDs
+	extensions := parser.CommonExtensions
 	p := parser.NewWithExtensions(extensions)
 	doc := p.Parse(md)
 

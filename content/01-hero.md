@@ -1,14 +1,19 @@
 ---
 layout: hero
 name: "#goku"
-role: Software Engineer
+role: Senior Backend Engineer at Autonomous
 location: Ho Chi Minh, Viet Nam
 image: /static/photos/goku.png
 image_dark: /static/photos/goku_dark.png
-tagline: "Senior Backend Engineer at [Autonomous](https://autonomous.ai?utm_source=goku.dev). 10 years building Go microservices — distributed tracing, real-time observability, multi-chain payments."
+tagline: I build the systems behind the experience.
+summary: Go backends, distributed systems, and tools for AI agents.
 ctas:
-  - label: hi.im@goku.dev
+  - label: Explore my work
+    url: "#experience"
+    primary: true
+  - label: Say hello
     url: mailto:hi.im@goku.dev
+    primary: true
   - label: GitHub
     url: https://github.com/goku-devv
   - label: X
