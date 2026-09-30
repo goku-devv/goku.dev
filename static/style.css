@@ -504,21 +504,66 @@ button:focus-visible {
 .section-work {
     counter-reset: case;
 }
+/* Each case is a <details> (content.go collapseCases): closed by default,
+   the summary shows number, title and kicker, with a +/– box on the right */
+.section-work details {
+    border-top: 1.5px solid var(--ink);
+}
+.section-work h2 + details {
+    border-top: 0;
+}
+.section-work details:last-of-type {
+    border-bottom: 1.5px solid var(--ink);
+}
+.section-work details[open] {
+    padding-bottom: 40px;
+}
+.section-work summary {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 40px;
+    column-gap: 24px;
+    align-items: center;
+    padding: 28px 0;
+    cursor: pointer;
+    list-style: none;
+}
+.section-work summary::-webkit-details-marker {
+    display: none;
+}
+.section-work summary > * {
+    grid-column: 1;
+}
+.section-work summary::after {
+    content: "+";
+    grid-column: 2;
+    grid-row: 1 / span 2;
+    display: grid;
+    place-items: center;
+    width: 40px;
+    height: 40px;
+    border: 1.5px solid var(--ink);
+    font: 400 20px/1 var(--mono);
+}
+.section-work details[open] > summary::after {
+    content: "–";
+}
+.section-work summary:hover::after,
+.section-work summary:focus-visible::after {
+    background: var(--ink);
+    color: var(--bg);
+}
+.section-work summary:focus-visible {
+    outline: 2px solid var(--ink);
+    outline-offset: 3px;
+}
 .section-work h3 {
     counter-increment: case;
     display: flex;
     align-items: baseline;
     gap: 16px;
-    margin: 88px 0 0;
-    padding-top: 24px;
-    border-top: 1.5px solid var(--ink);
+    margin: 0;
     font: 400 clamp(30px, 3.6vw, 44px)/1.05 var(--serif);
     letter-spacing: -0.01em;
-}
-.section-work h2 + h3 {
-    margin-top: 0;
-    padding-top: 0;
-    border-top: 0;
 }
 .section-work h3::before {
     content: counter(case, decimal-leading-zero);
@@ -528,7 +573,7 @@ button:focus-visible {
     letter-spacing: 0.05em;
 }
 .section-work h3 + p {
-    margin: 14px 0 32px;
+    margin: 12px 0 0;
     font: 400 13px/1.4 var(--mono);
     letter-spacing: 0.05em;
     text-transform: uppercase;
@@ -1003,6 +1048,17 @@ button:focus-visible {
 @media (prefers-reduced-motion: no-preference) {
     html {
         scroll-behavior: smooth;
+    }
+    .section-work {
+        interpolate-size: allow-keywords;
+    }
+    .section-work details::details-content {
+        height: 0;
+        overflow: clip;
+        transition: height 0.3s ease, content-visibility 0.3s allow-discrete;
+    }
+    .section-work details[open]::details-content {
+        height: auto;
     }
     .btn svg {
         transition: transform 0.15s ease;

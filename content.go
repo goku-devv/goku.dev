@@ -67,6 +67,7 @@ type frontmatter struct {
 	CTAs      []CTA           `yaml:"ctas"`
 	Entries   []TimelineEntry `yaml:"entries"`
 	Groups    []SkillGroup    `yaml:"groups"`
+	Collapse  bool            `yaml:"collapse"` // plain sections: each ### becomes a closed <details>
 }
 
 func LoadSections(dir string) ([]Section, error) {
@@ -146,9 +147,47 @@ func parseSection(filename string, raw []byte) (Section, error) {
 		s.Groups = meta.Groups
 	default:
 		s.Layout = "plain"
-		s.HTML = template.HTML(markdownToHTML(body))
+		html := markdownToHTML(body)
+		if meta.Collapse {
+			html = collapseCases(html)
+		}
+		s.HTML = template.HTML(html)
 	}
 	return s, nil
+}
+
+// collapseCases wraps each <h3> and everything after it, up to the next <h3>,
+// in a closed <details>. The heading, plus a kicker paragraph right after it
+// (<p><em>…</em></p>), becomes the <summary>. Anything before the first <h3>
+// stays outside; anything after the last case belongs to that case.
+func collapseCases(html []byte) []byte {
+	parts := bytes.Split(html, []byte("<h3"))
+	if len(parts) == 1 {
+		return html
+	}
+	var b bytes.Buffer
+	b.Write(parts[0])
+	for _, p := range parts[1:] {
+		c := append([]byte("<h3"), p...)
+		end := bytes.Index(c, []byte("</h3>"))
+		if end < 0 {
+			b.Write(c)
+			continue
+		}
+		end += len("</h3>")
+		rest := c[end:]
+		if k := bytes.TrimLeft(rest, "\n"); bytes.HasPrefix(k, []byte("<p><em>")) {
+			if i := bytes.Index(k, []byte("</p>")); i >= 0 {
+				end += len(rest) - len(k) + i + len("</p>")
+			}
+		}
+		b.WriteString("<details class=\"case\">\n<summary>")
+		b.Write(c[:end])
+		b.WriteString("</summary>")
+		b.Write(c[end:])
+		b.WriteString("</details>\n\n")
+	}
+	return b.Bytes()
 }
 
 // renderInline parses a short string as markdown and strips the wrapping <p>

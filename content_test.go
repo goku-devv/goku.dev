@@ -220,3 +220,35 @@ func TestLoadSections_SkipsHiddenFiles(t *testing.T) {
 		t.Fatalf("want only the hero section, got %+v", sections)
 	}
 }
+
+// A plain section with `collapse: true` renders each ### case as a closed
+// <details>: the heading and its kicker line become the <summary>.
+func TestLoadSections_CollapsibleCases(t *testing.T) {
+	dir := t.TempDir()
+	writeFile(t, dir, "03-work.md", "---\ncollapse: true\n---\n## Work\n\nIntro.\n\n### One\n\n*kicker one*\n\nBody **one**.\n\n### Two\n\nBody two.\n")
+	sections, err := LoadSections(dir)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(sections) != 1 || sections[0].Layout != "plain" {
+		t.Fatalf("want one plain section, got %+v", sections)
+	}
+	got := string(sections[0].HTML)
+	for _, want := range []string{
+		"<h2>Work</h2>",
+		"<p>Intro.</p>",
+		"<details class=\"case\">\n<summary><h3>One</h3>\n\n<p><em>kicker one</em></p></summary>",
+		"<p>Body <strong>one</strong>.</p>",
+		"<details class=\"case\">\n<summary><h3>Two</h3></summary>",
+	} {
+		if !strings.Contains(got, want) {
+			t.Errorf("missing %q in:\n%s", want, got)
+		}
+	}
+	if n := strings.Count(got, "</details>"); n != 2 {
+		t.Errorf("want 2 closed details, got %d in:\n%s", n, got)
+	}
+	if strings.Index(got, "<p>Intro.</p>") > strings.Index(got, "<details") {
+		t.Errorf("intro must stay outside the cases:\n%s", got)
+	}
+}
