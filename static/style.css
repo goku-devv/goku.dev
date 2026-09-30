@@ -692,11 +692,49 @@ button:focus-visible {
     text-align: right;
     white-space: nowrap;
 }
-.timeline-bullets {
+/* Highlights fold into a closed <details> under the role line */
+.timeline-more {
     grid-column: 2 / -1;
     grid-row: 2;
+}
+.timeline-more summary {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 4px 0;
+    cursor: pointer;
     list-style: none;
-    margin: 0;
+    font: 400 12px/1 var(--mono);
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+}
+.timeline-more summary::-webkit-details-marker {
+    display: none;
+}
+.timeline-more summary::after {
+    content: "+";
+    display: grid;
+    place-items: center;
+    width: 22px;
+    height: 22px;
+    border: 1.5px solid var(--ink);
+    font: 400 14px/1 var(--mono);
+}
+.timeline-more[open] > summary::after {
+    content: "–";
+}
+.timeline-more summary:hover::after,
+.timeline-more summary:focus-visible::after {
+    background: var(--ink);
+    color: var(--bg);
+}
+.timeline-more summary:focus-visible {
+    outline: 2px solid var(--ink);
+    outline-offset: 3px;
+}
+.timeline-bullets {
+    list-style: none;
+    margin: 14px 0 0;
     padding: 0;
 }
 .timeline-bullets li {
@@ -873,7 +911,7 @@ button:focus-visible {
         text-align: left;
         margin-top: 4px;
     }
-    .timeline-bullets {
+    .timeline-more {
         grid-column: 2;
         grid-row: 4;
     }
@@ -1049,15 +1087,18 @@ button:focus-visible {
     html {
         scroll-behavior: smooth;
     }
-    .section-work {
+    .section-work,
+    .timeline {
         interpolate-size: allow-keywords;
     }
-    .section-work details::details-content {
+    .section-work details::details-content,
+    .timeline-more::details-content {
         height: 0;
         overflow: clip;
         transition: height 0.3s ease, content-visibility 0.3s allow-discrete;
     }
-    .section-work details[open]::details-content {
+    .section-work details[open]::details-content,
+    .timeline-more[open]::details-content {
         height: auto;
     }
     .btn svg {

@@ -11,9 +11,12 @@
                 </div>
                 {{ if .Role }}<div class="timeline-role">{{ .Role }}</div>{{ end }}
                 {{ if .Bullets }}
-                <ul class="timeline-bullets">
-                    {{ range .Bullets }}<li>{{ . }}</li>{{ end }}
-                </ul>
+                <details class="timeline-more">
+                    <summary>{{ len .Bullets }} highlight{{ if gt (len .Bullets) 1 }}s{{ end }}</summary>
+                    <ul class="timeline-bullets">
+                        {{ range .Bullets }}<li>{{ . }}</li>{{ end }}
+                    </ul>
+                </details>
                 {{ end }}
             </div>
         </div>
