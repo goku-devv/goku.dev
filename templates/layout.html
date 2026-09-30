@@ -42,6 +42,10 @@
             if (favicon) {
                 favicon.href = theme === 'dark' ? '/static/favicon_dark.png' : '/static/favicon.png';
             }
+            // Entrance motion is opt-in: hide-before-reveal only when it can actually play.
+            if ('IntersectionObserver' in window && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.documentElement.classList.add('anim');
+            }
         })();
         </script>
     </head>
@@ -77,6 +81,30 @@
             <span class="foot-name">goku.dev</span>
             {{ with .Updated }}<span class="lbl">Last updated · <time datetime="{{ . }}">{{ . }}</time></span>{{ end }}
         </footer>
+        <script>
+        // Entrance motion: each section plays once when it scrolls into view
+        // (the cover plays on load). Stagger indexes feed the CSS delays.
+        (function() {
+            if (!document.documentElement.classList.contains('anim')) return;
+            var index = function(sel, prop) {
+                document.querySelectorAll(sel).forEach(function(el) {
+                    el.style.setProperty(prop, Array.prototype.indexOf.call(el.parentNode.children, el));
+                });
+            };
+            index('.glitch i', '--i');
+            index('.timeline-row', '--i');
+            index('.grouped-row', '--t');
+            index('.pix i', '--i');
+            var io = new IntersectionObserver(function(entries) {
+                entries.forEach(function(e) {
+                    if (!e.isIntersecting) return;
+                    e.target.classList.add('in');
+                    io.unobserve(e.target);
+                });
+            }, { rootMargin: '0px 0px -12% 0px' });
+            document.querySelectorAll('.section').forEach(function(s) { io.observe(s); });
+        })();
+        </script>
         <script>
         // Theme toggle — the new theme grows as a circle from the click point
         // (View Transitions API); unsupported browsers or reduced motion switch instantly.

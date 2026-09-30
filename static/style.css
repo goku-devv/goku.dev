@@ -113,9 +113,9 @@ button:focus-visible {
     display: flex;
     align-items: baseline;
     gap: 20px;
+    position: relative;
     margin: 0 0 56px;
     padding-bottom: 16px;
-    border-bottom: 1.5px solid var(--ink);
     font: 400 clamp(38px, 5vw, 54px)/0.95 var(--serif);
     letter-spacing: -0.01em;
 }
@@ -125,6 +125,18 @@ button:focus-visible {
     content: counter(sec, decimal-leading-zero) / "";
     font: 400 13px/1 var(--mono);
     letter-spacing: 0.05em;
+}
+/* The hairline is an element (not a border) so it can draw in */
+.section-title::after,
+.section-plain > h2:first-child::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 1.5px;
+    background: var(--ink);
+    transform-origin: left center;
 }
 
 /* === Cover (hero) === */
@@ -535,4 +547,111 @@ button:focus-visible {
     .grouped-row {
         min-height: 0;
     }
+}
+
+/* === Motion — mirrors the goku.dev HyperFrames video ===
+   Initial states apply only under html.anim, which the <head> script sets
+   unless the user prefers reduced motion, so no-JS / reduced-motion visitors
+   get the static page. A section plays once when it gains .in (see layout.html);
+   --i / --t are stagger indexes set by the same script. */
+.anim .section-hero .hair,
+.anim .section-title::after,
+.anim .section-plain > h2:first-child::after {
+    transform: scaleX(0);
+    transform-origin: left center;
+    transition: transform 0.9s cubic-bezier(0.65, 0, 0.35, 1);
+}
+.anim .section-hero .hair-b {
+    transition-delay: 0.1s;
+}
+.anim .glitch i {
+    transform: scaleX(0);
+    transform-origin: right center;
+    transition: transform 0.6s cubic-bezier(0.22, 1, 0.36, 1) calc(0.2s + var(--i, 0) * 80ms);
+}
+.anim .cover-top .tag,
+.anim .kick,
+.anim .hero-name,
+.anim .hero-tagline,
+.anim .hero-img-wrapper,
+.anim .hero-ctas,
+.anim .section-title,
+.anim .section-plain > h2:first-child,
+.anim .section-plain > :not(h2),
+.anim .grouped-row {
+    opacity: 0;
+    transform: translateY(24px);
+    transition:
+        opacity 0.6s cubic-bezier(0.22, 1, 0.36, 1),
+        transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.anim .hero-name {
+    transform: translateY(70px);
+    transition-duration: 0.9s;
+    transition-delay: 0.55s;
+}
+.anim .kick {
+    transition-delay: 0.4s;
+}
+.anim .hero-img-wrapper {
+    transform: translateY(40px);
+    transition-duration: 0.8s;
+    transition-delay: 0.5s;
+}
+.anim .cover-top .tag {
+    transform: none;
+    transition-delay: 0.7s;
+}
+.anim .hero-tagline {
+    transition-delay: 1.1s;
+}
+.anim .hero-ctas {
+    transform: none;
+    transition-delay: 1.4s;
+}
+.anim .section-title,
+.anim .section-plain > h2:first-child {
+    transition-delay: 0.1s;
+}
+.anim .section-plain > :not(h2) {
+    transition-delay: 0.35s;
+}
+.anim .timeline-row {
+    opacity: 0;
+    transform: translateX(-40px);
+    transition:
+        opacity 0.55s cubic-bezier(0.22, 1, 0.36, 1) calc(0.35s + var(--i, 0) * 180ms),
+        transform 0.55s cubic-bezier(0.22, 1, 0.36, 1) calc(0.35s + var(--i, 0) * 180ms);
+}
+.anim .grouped-row {
+    transition-delay: calc(0.2s + var(--t, 0) * 60ms);
+}
+.anim .pix i {
+    opacity: 0;
+    transform: scaleY(0.2);
+    transition:
+        opacity 0.2s ease-out calc(0.5s + var(--t, 0) * 60ms + var(--i, 0) * 45ms),
+        transform 0.2s ease-out calc(0.5s + var(--t, 0) * 60ms + var(--i, 0) * 45ms);
+}
+/* Played: every animated piece returns to its resting state */
+.anim .in .hair,
+.anim .in .glitch i,
+.anim .in .section-title::after,
+.anim .in.section-plain > h2:first-child::after {
+    transform: none;
+}
+.anim .in .cover-top .tag,
+.anim .in .kick,
+.anim .in .hero-name,
+.anim .in .hero-tagline,
+.anim .in .hero-img-wrapper,
+.anim .in .hero-ctas,
+.anim .in .section-title,
+.anim .in.section-plain > h2:first-child,
+.anim .in.section-plain > :not(h2),
+.anim .in .timeline-row,
+.anim .in .grouped-row,
+.anim .in .pix i {
+    opacity: 1;
+    transform: none;
 }
