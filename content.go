@@ -81,7 +81,8 @@ func LoadSections(dir string) ([]Section, error) {
 
 	names := make([]string, 0, len(entries))
 	for _, e := range entries {
-		if e.IsDir() || !strings.HasSuffix(e.Name(), ".md") {
+		// Hidden files include macOS AppleDouble metadata ("._01-hero.md").
+		if e.IsDir() || strings.HasPrefix(e.Name(), ".") || !strings.HasSuffix(e.Name(), ".md") {
 			continue
 		}
 		names = append(names, e.Name())

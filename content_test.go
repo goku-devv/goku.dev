@@ -205,3 +205,18 @@ func TestLoadSections_SkipsBadYAML(t *testing.T) {
 		t.Fatalf("want only the ok section, got %+v", sections)
 	}
 }
+
+// macOS tar/cp can leave AppleDouble files ("._01-hero.md") next to real
+// content; they must never render as sections.
+func TestLoadSections_SkipsHiddenFiles(t *testing.T) {
+	dir := t.TempDir()
+	writeFile(t, dir, "._01-hero.md", "\x00\x05\x16\x07Mac OS X ATTR")
+	writeFile(t, dir, "01-hero.md", "---\nlayout: hero\nname: goku\n---\n")
+	sections, err := LoadSections(dir)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(sections) != 1 || sections[0].Slug != "hero" {
+		t.Fatalf("want only the hero section, got %+v", sections)
+	}
+}
