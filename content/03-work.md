@@ -114,3 +114,32 @@ engineer → Claude Code
   every command → guard (7 rules)
   production tag → human confirms
 ```
+
+### One sign-in for every app
+
+*Identity · OAuth2 / OIDC · 2026*
+
+**Problem** Every storefront, admin and command-line client needed one standards-based way to sign a person in, and people needed to see, and end, the sessions their devices hold.
+
+**Role** Designed and built the platform's single sign-on service from an empty repo (263 of 266 commits), in production since January 2026, and its TypeScript client SDK.
+
+**Decisions**
+
+- **One login path, pluggable grants.** Password, email code, TOTP, passkeys, Google, Apple, GitHub and refresh all plug into one pipeline; sessions, cookies and token issuance are written once. *Trade-off: every grant has to fit one request shape.*
+- **Revocable per device, checked at refresh.** Each sign-in is a grant whose id rides in both tokens; ending it from a Devices & apps page, an admin tool or RFC 7009 revocation takes effect at the next refresh. *Trade-off: revocation lands within one access-token lifetime, not instantly, so the API hot path stays lookup-free.*
+- **Credentials live with the service that checks them.** Passkeys are discoverable, so starting a sign-in reveals no account, and one-time-code and TOTP secrets sit in the auth service's own store, encrypted at rest. *Trade-off: passkeys are sold as faster, not stronger, while email codes remain for the same account.*
+- **Ship dark, then enforce.** The client and redirect policy rolled out off → log → enforce per environment, so real traffic proved it before it refused anything.
+- **Asymmetric signing without a forced logout.** Tokens moved from a shared secret to RS256; downstream services hold only the public key, and both algorithms were accepted during the switch.
+
+**Outcome** Standards-based (PKCE, RFC 7009, RFC 9207, RFC 8252 loopback redirects), 7 grant types, 232 Go tests, and a zero-dependency SDK on npm for browser, React and CLI sign-in.
+
+```text
+storefront · admin · CLI
+  → one login path
+      password · code · TOTP · passkey
+      Google · Apple · GitHub · refresh
+  → one grant per device, id in both tokens
+  → RS256 tokens; services hold the
+    public key only
+revoke → takes effect at the next refresh
+```
