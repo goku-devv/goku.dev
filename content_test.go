@@ -252,3 +252,21 @@ func TestLoadSections_CollapsibleCases(t *testing.T) {
 		t.Errorf("intro must stay outside the cases:\n%s", got)
 	}
 }
+
+// Guard for the real site content: a YAML mistake makes LoadSections skip the
+// file with only a log line, so the section would silently vanish in production.
+func TestRealContentParses(t *testing.T) {
+	files, err := filepath.Glob("content/*.md")
+	if err != nil {
+		t.Fatal(err)
+	}
+	for _, f := range files {
+		raw, err := os.ReadFile(f)
+		if err != nil {
+			t.Fatal(err)
+		}
+		if _, err := parseSection(filepath.Base(f), raw); err != nil {
+			t.Errorf("%s: %v", f, err)
+		}
+	}
+}
