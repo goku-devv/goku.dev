@@ -384,33 +384,36 @@ button:focus-visible {
     background: var(--ink);
     color: var(--bg);
 }
-/* tracing is not a hop: it watches every one of them */
+/* tracing is not a hop: it watches every one of them.
+   Dashed lines are 1px, not the 1.5px hairline: on 3x screens WebKit snaps
+   1.5px to a fraction and then draws no vertical dashes at all. */
 .flow-trace {
-    border-style: dashed;
+    border: 1px dashed var(--ink);
 }
 /* a wire: 28px along its own inline axis, so a vertical writing-mode stands
    it upright without a transform (rotated hairlines blur); the arrowhead
    sits at the inline end, or the start for .rev, or both */
 .w {
     --r: 45deg;
+    --t: 1.5px;
     position: relative;
     place-self: center;
     inline-size: 28px;
-    border-block-start: 1.5px solid var(--ink);
+    border-block-start: var(--t) solid var(--ink);
 }
 .w.v {
     --r: 135deg;
     writing-mode: vertical-lr;
 }
 .w.is-async {
+    --t: 1px;
     border-block-start-style: dashed; /* published, not called */
 }
 .w::after,
 .w.is-both::before {
     content: "";
     position: absolute;
-    box-sizing: border-box;
-    inset-block-start: -4.25px;
+    inset-block-start: calc(-4.25px - var(--t) / 2); /* centred on the line */
     inset-inline-end: 1.5px;
     width: 7px;
     height: 7px;
@@ -1135,6 +1138,19 @@ button:focus-visible {
         mix-blend-mode: normal;
     }
     .pix i {
+        background: CanvasText;
+    }
+    /* keep the lit / hovered / focused node and the request dot visible */
+    .flow-node:hover,
+    .flow-node:focus-visible,
+    .flow-node.is-on {
+        forced-color-adjust: none;
+        border-color: CanvasText;
+        outline-color: CanvasText;
+        background: CanvasText;
+        color: Canvas;
+    }
+    .flow-dot {
         background: CanvasText;
     }
 }

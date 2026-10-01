@@ -158,7 +158,7 @@
                 var pts = [].concat.apply([], hops().map(function(h) { return h[2]; }));
                 dot.style.transform = at(pts[0]);
                 if (still) return;
-                ambient = dot.animate(pts.map(function(p) { return { transform: at(p) }; }), { duration: 6400 });
+                ambient = dot.animate(pts.map(function(p) { return { transform: at(p) }; }), { duration: 4800 });
                 ambient.pause();
             };
             var stop = function() {
