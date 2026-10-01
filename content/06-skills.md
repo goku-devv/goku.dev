@@ -7,7 +7,7 @@ groups:
   - name: Data
     items: [MongoDB, MySQL, Redis, Elasticsearch, BigQuery, CDC]
   - name: Cloud & Ops
-    items: [GCP, AWS, Kubernetes, Docker, Terraform, ArgoCD, Datadog, OpenTelemetry]
+    items: [GCP, AWS, Kubernetes, Docker, ArgoCD, Datadog, OpenTelemetry]
   - name: AI agents
     items: [MCP, Claude Code, Codex CLI, Agent workflows, OpenClaw, Claude, OpenAI, Ollama]
 ---
