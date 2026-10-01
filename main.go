@@ -4,6 +4,8 @@ import (
 	"html/template"
 	"log"
 	"net/http"
+	"os"
+	"strconv"
 
 	"github.com/gomarkdown/markdown"
 	"github.com/gomarkdown/markdown/html"
@@ -14,8 +16,19 @@ import (
 var lastUpdated string
 
 type PageData struct {
-	Sections []Section
-	Updated  string
+	Sections   []Section
+	Updated    string
+	CSSVersion string
+}
+
+// assetVersion is the cache-busting ?v= for a static file: its mtime, so a
+// deploy that only uploads the file still reaches returning visitors.
+func assetVersion(path string) string {
+	fi, err := os.Stat(path)
+	if err != nil {
+		return lastUpdated
+	}
+	return strconv.FormatInt(fi.ModTime().Unix(), 10)
 }
 
 func markdownToHTML(md []byte) []byte {
@@ -50,7 +63,7 @@ func homeHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := tmpl.ExecuteTemplate(w, "layout.html", PageData{Sections: sections, Updated: lastUpdated}); err != nil {
+	if err := tmpl.ExecuteTemplate(w, "layout.html", PageData{Sections: sections, Updated: lastUpdated, CSSVersion: assetVersion("static/style.css")}); err != nil {
 		http.Error(w, "Error rendering template", http.StatusInternalServerError)
 		log.Printf("ExecuteTemplate: %v", err)
 		return

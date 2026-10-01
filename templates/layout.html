@@ -28,7 +28,7 @@
         <meta name="twitter:image"
             content="https://goku.dev/static/photos/goku.png">
         <!-- ?v= busts browser caches when a new date ships (day granularity) -->
-        <link rel="stylesheet" href="/static/style.css?v={{ .Updated }}">
+        <link rel="stylesheet" href="/static/style.css?v={{ .CSSVersion }}">
         <link rel="preconnect" href="https://fonts.googleapis.com">
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
         <link
@@ -109,9 +109,10 @@
         </script>
         <script>
         // Follow a request: hover/focus/tap explains a node; the button walks one
-        // demo run (illustrative timings, not telemetry). The request dot drifts
-        // along the main line only while the strip is on screen, never with
-        // reduced motion.
+        // demo run (illustrative timings, not telemetry) along the real shape of
+        // the system: BFF → service → database, then Pub/Sub → worker → back into
+        // a service. The request dot drifts that route once each time the strip
+        // comes on screen, never with reduced motion.
         (function() {
             var flow = document.querySelector('[data-flow]');
             if (!flow) return;
@@ -119,8 +120,9 @@
             var cap = flow.querySelector('.flow-caption');
             var dot = flow.querySelector('.flow-dot');
             var run = flow.querySelector('.flow-run');
-            var trace = flow.querySelector('.flow-trace');
-            var steps = [].slice.call(flow.querySelectorAll('.flow-node[data-step]'));
+            var nodes = [].slice.call(flow.querySelectorAll('.flow-node'));
+            var N = {};
+            nodes.forEach(function(n) { N[n.getAttribute('data-id')] = n; });
             var still = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
             var running = false, ambient = null, timer = null;
             var show = function(node, extra) {
@@ -128,28 +130,46 @@
                 b.textContent = node.getAttribute('data-k') + (extra ? ' · ' + extra : '');
                 cap.replaceChildren(b, document.createTextNode(node.getAttribute('data-note')));
             };
-            var at = function(node) {
-                var m = map.getBoundingClientRect(), r = node.getBoundingClientRect();
-                return 'translate(' + (r.left - m.left + r.width / 2) + 'px,' + (r.top - m.top + r.height / 2) + 'px)';
+            var mid = function(n) {
+                var m = map.getBoundingClientRect(), r = n.getBoundingClientRect();
+                return [r.left - m.left + r.width / 2, r.top - m.top + r.height / 2];
+            };
+            // the point on the Pub/Sub rail level with node n (the rail lies across
+            // on desktop and stands upright on phones)
+            var rail = function(n) {
+                var b = mid(N.bus), p = mid(n);
+                return N.bus.offsetWidth > N.bus.offsetHeight ? [p[0], b[1]] : [b[0], p[1]];
+            };
+            var at = function(p) { return 'translate(' + p[0] + 'px,' + p[1] + 'px)'; };
+            // each hop: the node it lights, its demo timing, the points the dot passes
+            var hops = function() {
+                return [
+                    [N.req, '0 ms', [mid(N.req)]],
+                    [N.bff, '+12 ms', [mid(N.bff)]],
+                    [N.svc, '+9 ms', [mid(N.svc)]],
+                    [N.db, '+6 ms', [mid(N.db)]],
+                    [N.bus, '+3 ms · async', [mid(N.svc), rail(N.svc)]],
+                    [N.wrk, '+41 ms', [rail(N.wrk), mid(N.wrk)]],
+                    [N.svc, '+8 ms · from worker', [mid(N.svc)]]
+                ];
             };
             var drift = function() {
                 if (ambient) ambient.cancel();
-                dot.style.transform = at(steps[0]);
+                var pts = [].concat.apply([], hops().map(function(h) { return h[2]; }));
+                dot.style.transform = at(pts[0]);
                 if (still) return;
-                ambient = dot.animate(steps.map(function(s, i) {
-                    return { transform: at(s), offset: i / (steps.length - 1) };
-                }), { duration: 4800 });
+                ambient = dot.animate(pts.map(function(p) { return { transform: at(p) }; }), { duration: 6400 });
                 ambient.pause();
             };
             var stop = function() {
                 clearTimeout(timer);
-                steps.concat(trace).forEach(function(s) { s.classList.remove('is-on'); });
+                nodes.forEach(function(n) { n.classList.remove('is-on'); });
                 running = false;
                 run.removeAttribute('aria-disabled');
                 drift();
                 if (visible && ambient) ambient.play();
             };
-            flow.querySelectorAll('.flow-node').forEach(function(n) {
+            nodes.forEach(function(n) {
                 ['mouseenter', 'focus', 'click'].forEach(function(ev) {
                     n.addEventListener(ev, function() { if (running) stop(); show(n); });
                 });
@@ -161,18 +181,18 @@
                 if (ambient) { ambient.cancel(); ambient = null; }
                 var i = 0;
                 (function hop() {
-                    steps.forEach(function(s) { s.classList.remove('is-on'); });
-                    if (i === steps.length) {
-                        trace.classList.add('is-on');
-                        show(trace, 'total 64 ms (demo)');
+                    nodes.forEach(function(n) { n.classList.remove('is-on'); });
+                    N.trc.classList.add('is-on'); // every hop is traced
+                    var path = hops(); // measured per hop, so a resize mid-run cannot leave it stale
+                    if (i === path.length) {
+                        show(N.trc, 'total 79 ms (demo)');
                         timer = setTimeout(stop, 1600);
                         return;
                     }
-                    var n = steps[i], to = at(n);
-                    n.classList.add('is-on');
-                    trace.classList.toggle('is-on', i === 1 || i === 3);
-                    show(n, n.getAttribute('data-t') + ' (demo)');
-                    if (!still) dot.animate([{ transform: getComputedStyle(dot).transform }, { transform: to }], { duration: 450, easing: 'cubic-bezier(0.65, 0, 0.35, 1)' });
+                    var h = path[i], pts = h[2], to = at(pts[pts.length - 1]);
+                    h[0].classList.add('is-on');
+                    show(h[0], h[1] + ' (demo)');
+                    if (!still) dot.animate([{ transform: getComputedStyle(dot).transform }].concat(pts.map(function(p) { return { transform: at(p) }; })), { duration: 450, easing: 'cubic-bezier(0.65, 0, 0.35, 1)' });
                     dot.style.transform = to;
                     i++;
                     timer = setTimeout(hop, 1100);

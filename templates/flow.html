@@ -1,18 +1,37 @@
 {{ define "flow" }}
 <div class="flow" data-flow>
     <div class="flow-map" role="group" aria-label="How a request moves through the systems I build">
-        <button class="flow-node" type="button" data-step="0" data-k="Request" data-t="0 ms"
+        <button class="flow-node" type="button" style="grid-area:req" data-id="req" data-k="Request"
             data-note="Every request is a promise with a deadline. I design for the p99, not the demo.">Request</button>
-        <button class="flow-node" type="button" data-step="1" data-k="API" data-t="+12 ms"
-            data-note="Thin edges: validate, authorize, fan out over gRPC. Business rules live in domain services, not the gateway.">API</button>
-        <button class="flow-node" type="button" data-step="2" data-k="Queue" data-t="+3 ms · async"
-            data-note="If it doesn't have to happen now, it goes on a queue. At-least-once delivery means every consumer is idempotent.">Queue</button>
-        <button class="flow-node" type="button" data-step="3" data-k="Worker" data-t="+41 ms"
-            data-note="Side effects (emails, stock, notifications) run in workers, each behind an explicit guard and safe to retry.">Worker</button>
-        <button class="flow-node" type="button" data-step="4" data-k="Database" data-t="+8 ms"
+        <button class="flow-node" type="button" style="grid-area:bff" data-id="bff" data-k="BFF · backend-for-frontend"
+            data-note="Thin edges: validate, authorize, fan out over gRPC. Business rules live in domain services, not the gateway.">BFF</button>
+        <button class="flow-node" type="button" style="grid-area:svc" data-id="svc" data-k="Service"
+            data-note="Business rules and data live here. The database sits behind the service that owns it.">Service</button>
+        <button class="flow-node" type="button" style="grid-area:db" data-id="db" data-k="Database"
             data-note="One transaction for the write, events for everything else.">Database</button>
-        <button class="flow-node flow-trace" type="button" data-k="Trace / Observe"
+        <button class="flow-node" type="button" style="grid-area:ing" data-id="ing" data-k="Webhook ingest"
+            data-note="Carrier and payment webhooks land here: store the raw event, publish it, answer fast. A worker does the rest.">Ingest</button>
+        <button class="flow-node" type="button" style="grid-area:bus" data-id="bus" data-k="Pub/Sub"
+            data-note="BFFs, services, ingest and workers publish; workers subscribe. At-least-once, so every consumer is idempotent.">Pub/<wbr>Sub</button>
+        <button class="flow-node" type="button" style="grid-area:wrk" data-id="wrk" data-k="Worker"
+            data-note="Subscribers and cron jobs. Side effects run here, safe to retry. They call services, not the database.">Worker</button>
+        <button class="flow-node" type="button" style="grid-area:crn" data-id="crn" data-k="Cron"
+            data-note="Scheduled jobs run inside the workers, next to the subscribers.">Cron</button>
+        <button class="flow-node" type="button" style="grid-area:idx" data-id="idx" data-k="Search index"
+            data-note="Where a worker does write directly: the catalog worker indexes products into Elasticsearch.">Search</button>
+        <button class="flow-node flow-trace" type="button" style="grid-area:trc" data-id="trc" data-k="Trace / Observe"
             data-note="If I can't see it in a trace, it didn't happen. Every hop carries the same trace id.">Trace / Observe</button>
+        {{/* wires: arrows along the row; .v stands one upright, .rev points it back, dashed = asynchronous */}}
+        <i class="w" style="grid-area:w1" aria-hidden="true"></i>
+        <i class="w" style="grid-area:w2" aria-hidden="true"></i>
+        <i class="w rev" style="grid-area:w3" aria-hidden="true"></i>
+        <i class="w" style="grid-area:w4" aria-hidden="true"></i>
+        <i class="w v is-both" style="grid-area:wd" aria-hidden="true"></i>
+        <i class="w v" style="grid-area:wc" aria-hidden="true"></i>
+        <i class="w is-async" style="grid-area:p0" aria-hidden="true"></i>
+        <i class="w v is-async" style="grid-area:p1" aria-hidden="true"></i>
+        <i class="w v is-async" style="grid-area:p2" aria-hidden="true"></i>
+        <i class="w v is-async is-both" style="grid-area:p3" aria-hidden="true"></i>
         <span class="flow-dot" aria-hidden="true"></span>
     </div>
     <div class="flow-side">
