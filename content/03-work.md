@@ -3,6 +3,35 @@ collapse: true
 ---
 ## Selected Work
 
+### Switching off the monolith, one cart at a time
+
+*Migration · Strangler pattern · 2020–2026*
+
+**Problem** Since 2017 the storefront's backend had been one Go monolith covering catalog, cart, checkout with nine payment adapters, accounts, email and more: about 158k lines and 300-plus routes by 2023. From 2021 the team built domain services on a new framework, but checkout still created every order in the monolith's database, and a 2021 attempt to rewrite it in one go was never merged.
+
+**Role** Joined in November 2020 and became the monolith's second-largest contributor (top committer in 2021). Started the service framework in 2021. From mid-2022 I wrote most of the bridge to the new services and ran the production cutover, started the new storefront API, and in 2026 scaled the monolith to zero.
+
+**Decisions**
+
+- **Route each cart, not each endpoint.** gRPC clients inside the monolith plus a gate of ~20 checks: a cart goes to the new order service only if the new platform supports every feature it uses and already has every product in it. *Trade-off: both order paths had to stay correct side by side for months.*
+- **Ramp in config, not in code.** An on/off switch and a percentage: 10% on day one, 50% within three weeks, every eligible cart by October. *Trade-off: a random roll per checkout, not sticky per customer.*
+- **One system per order.** A routed order is created only in the new service, and if that call fails the legacy transaction rolls back. *Trade-off: not a distributed transaction, so a failure after the remote create can leave an order to clean up.*
+- **Delete before migrating.** A month before the bridge I removed ~59k lines (retired features, 122 email templates moved onto the framework's mail package). *Trade-off: two very large changes, hard to review line by line.*
+- **Replace the client API, keep the old data.** A new storefront BFF took over shopping and checkout, and old orders stay in the legacy database, read by the new BFFs. *Trade-off: the BFFs depend on the legacy schema.*
+
+**Outcome** New orders moved cart by cart, with no big-bang cutover. The monolith stopped growing in 2023 and was scaled to zero in September 2026. Across the platform's 47 service, worker and library repos I have about 60% of the non-merge commits.
+
+```text
+2022  monolith checkout
+        → gate: ~20 checks · switch · %
+            pass → order service (gRPC)
+            fail → legacy path, unchanged
+2023+ storefront BFF · admin BFF
+        → domain services (gRPC)
+        → legacy database (old orders)
+2026  monolith scaled to zero
+```
+
 ### One checkout, twelve ways to pay
 
 *Payments · Storefront API · 2022–2026*

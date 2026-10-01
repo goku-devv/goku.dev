@@ -14,6 +14,8 @@ entries:
       - "Made database reads go to replicas by default, with explicit primary reads for read-after-write paths (53 call sites); moved 22 repos onto the new MongoDB driver."
       - "Made the store-credit, loyalty-points and affiliate ledger transactional: every balance change and its history entry commit together behind an optimistic lock."
       - "Moved the admin console's sign-in onto the single sign-on service and SDK I built, with session, device and login-history views."
+      - "Built and owned the platform's Elasticsearch product search (2022–2026, ~78% of its core commits): an indexing worker fed by catalog-change events, plus listing filters and attribute facets that admins add without a deploy; a teammate did most of the early relevance tuning."
+      - "Built tiered flash sales in the catalog (2023–24): minute-aligned windows, automatic tier advance and next-sale chaining, with storefront, admin and import layers and the pricing hook that ties each sale line to a teammate's stock counter at checkout."
   - company: Bestarion Software Company Ltd
     dates: 2020
     role: Senior Software Engineer
